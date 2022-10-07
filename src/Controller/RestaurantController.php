@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Restaurant;
 use App\Repository\RestaurantRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,6 +36,15 @@ class RestaurantController extends AbstractController
     public function getOneRestaurant(Restaurant $restaurant, SerializerInterface $serializer): JsonResponse
     {
         return new JsonResponse($serializer->serialize($restaurant, 'json'), Response::HTTP_OK, [], true);
+    }
+
+    #[Route('/api/restaurants/{idRestaurant}', name: 'restaurants.delete', methods: ['DELETE'])]
+    #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
+    public function deleteRestaurant(Restaurant $restaurant, SerializerInterface $serializer, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $entityManager->remove($restaurant);
+        $entityManager->flush();
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], true);
     }
 
     // #[Route('/api/restaurants/{id}', name: 'restaurants.getOne', methods: ['GET'])]
