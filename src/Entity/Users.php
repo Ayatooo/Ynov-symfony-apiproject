@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\UsersRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UsersRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
 class Users
@@ -16,12 +17,15 @@ class Users
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['showUsers'])]
     private ?string $userFirstName = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['showUsers'])]
     private ?string $userLastName = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['showUsers'])]
     private ?string $userEmail = null;
 
     #[ORM\Column(length: 255)]

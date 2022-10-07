@@ -34,7 +34,6 @@ class RestaurantController extends AbstractController
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
     public function getOneRestaurant(Restaurant $restaurant, SerializerInterface $serializer): JsonResponse
     {
-
         return new JsonResponse($serializer->serialize($restaurant, 'json'), Response::HTTP_OK, [], true);
     }
 
