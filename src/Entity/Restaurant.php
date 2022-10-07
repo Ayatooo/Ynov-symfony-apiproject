@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\RestaurantRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\RestaurantRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: RestaurantRepository::class)]
 class Restaurant
@@ -14,18 +15,23 @@ class Restaurant
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['showRestaurants'])]
     private ?string $restaurantName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['showRestaurants'])]
     private ?string $restaurantLatitude = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['showRestaurants'])]
     private ?string $restaurantLongitude = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['showRestaurants'])]
     private ?string $restaurantDescription = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['showRestaurants'])]
     private ?string $restaurantPhone = null;
 
     #[ORM\Column]

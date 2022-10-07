@@ -27,7 +27,7 @@ class RestaurantController extends AbstractController
     public function getRestaurant(RestaurantRepository $repository, SerializerInterface $serializer): JsonResponse
     {
         $restaurants = $repository->findAll();
-        $data = $serializer->serialize($restaurants, 'json');
+        $data = $serializer->serialize($restaurants, 'json', ['groups' => 'showRestaurants']);
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
@@ -35,7 +35,7 @@ class RestaurantController extends AbstractController
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
     public function getOneRestaurant(Restaurant $restaurant, SerializerInterface $serializer): JsonResponse
     {
-        return new JsonResponse($serializer->serialize($restaurant, 'json'), Response::HTTP_OK, [], true);
+        return new JsonResponse($serializer->serialize($restaurant, 'json', ['groups' => 'showRestaurants']), Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/restaurants/{idRestaurant}', name: 'restaurants.delete', methods: ['DELETE'])]
