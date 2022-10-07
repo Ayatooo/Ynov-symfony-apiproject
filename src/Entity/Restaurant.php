@@ -31,6 +31,9 @@ class Restaurant
     #[ORM\Column]
     private ?bool $status = null;
 
+    #[ORM\ManyToOne(inversedBy: 'userRestaurant')]
+    private ?Users $restaurantOwner = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -104,6 +107,18 @@ class Restaurant
     public function setStatus(bool $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getRestaurantOwner(): ?Users
+    {
+        return $this->restaurantOwner;
+    }
+
+    public function setRestaurantOwner(?Users $restaurantOwner): self
+    {
+        $this->restaurantOwner = $restaurantOwner;
 
         return $this;
     }
