@@ -56,7 +56,8 @@ class RestaurantController extends AbstractController
 
         $entityManager->persist($restaurant);
         $entityManager->flush();
-        return new JsonResponse(null, Response::HTTP_CREATED, [], false);
+        $jsonRestaurant = $serializer->serialize($restaurant, 'json', ['groups' => 'showRestaurants']);
+        return new JsonResponse($jsonRestaurant, Response::HTTP_CREATED, [], true);
     }
 
     // #[Route('/api/restaurants/{id}', name: 'restaurants.getOne', methods: ['GET'])]
