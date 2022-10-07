@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Restaurant;
 use App\Repository\RestaurantRepository;
+use App\Repository\UsersRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -49,10 +50,16 @@ class RestaurantController extends AbstractController
     }
 
     #[Route('/api/restaurants', name: 'restaurants.create', methods: ['POST'])]
-    public function createRestaurant(SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request): JsonResponse
+    public function createRestaurant(SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request, UsersRepository $usersRepository): JsonResponse
     {
         $restaurant = $serializer->deserialize($request->getContent(), Restaurant::class, 'json');
         $restaurant->setStatus(true);
+
+        $content = $request->toArray();
+        $idOwner = $content['idOwner'];
+        $owner = $usersRepository->find($idOwner);
+        $restaurant->setRestaurantOwner($owner);
+
 
         $entityManager->persist($restaurant);
         $entityManager->flush();
