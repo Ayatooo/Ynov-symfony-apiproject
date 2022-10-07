@@ -45,7 +45,7 @@ class RestaurantController extends AbstractController
     {
         $entityManager->remove($restaurant);
         $entityManager->flush();
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], true);
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], false);
     }
 
     #[Route('/api/restaurants', name: 'restaurants.create', methods: ['POST'])]
