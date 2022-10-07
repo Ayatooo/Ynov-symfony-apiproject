@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\HttpFoundation\Request;
 
 class RestaurantController extends AbstractController
 {
@@ -45,6 +46,17 @@ class RestaurantController extends AbstractController
         $entityManager->remove($restaurant);
         $entityManager->flush();
         return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], true);
+    }
+
+    #[Route('/api/restaurants', name: 'restaurants.create', methods: ['POST'])]
+    public function createRestaurant(SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request): JsonResponse
+    {
+        $restaurant = $serializer->deserialize($request->getContent(), Restaurant::class, 'json');
+        $restaurant->setStatus(true);
+
+        $entityManager->persist($restaurant);
+        $entityManager->flush();
+        return new JsonResponse(null, Response::HTTP_CREATED, [], false);
     }
 
     // #[Route('/api/restaurants/{id}', name: 'restaurants.getOne', methods: ['GET'])]
