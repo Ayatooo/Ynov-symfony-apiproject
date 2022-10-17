@@ -24,7 +24,7 @@ class UsersController extends AbstractController
     }
 
     #[Route('/api/users', name: 'users.getAll', methods: ['GET'])]
-    public function getRestaurant(UsersRepository $repository, SerializerInterface $serializer): JsonResponse
+    public function getUsers(UsersRepository $repository, SerializerInterface $serializer): JsonResponse
     {
         $users = $repository->findAll();
         $data = $serializer->serialize($users, 'json', ['groups' => 'showUsers']);
@@ -33,17 +33,17 @@ class UsersController extends AbstractController
 
     #[Route('/api/users/{idUsers}', name: 'users.getOne', methods: ['GET'])]
     #[ParamConverter('users', options: ['id' => 'idUsers'])]
-    public function getOneRestaurant(Users $users, SerializerInterface $serializer): JsonResponse
+    public function getOneUsers(Users $users, SerializerInterface $serializer): JsonResponse
     {
         return new JsonResponse($serializer->serialize($users, 'json', ['groups' => 'showUsers']), Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/users/{idUsers}', name: 'users.delete', methods: ['DELETE'])]
     #[ParamConverter('users', options: ['id' => 'idUsers'])]
-    public function deleteRestaurant(Users $users, EntityManagerInterface $entityManager): JsonResponse
+    public function deleteUsers(Users $users, EntityManagerInterface $entityManager): JsonResponse
     {
-        $entityManager->remove($users);
+        $users->setStatus(false);
         $entityManager->flush();
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], false);
+        return new JsonResponse('User deleted', Response::HTTP_OK);
     }
 }
