@@ -44,7 +44,7 @@ class RestaurantController extends AbstractController
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
     public function deleteRestaurant(Restaurant $restaurant, SerializerInterface $serializer, EntityManagerInterface $entityManager): JsonResponse
     {
-        $entityManager->remove($restaurant);
+        $restaurant->setStatus(false);
         $entityManager->flush();
         return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], false);
     }
@@ -66,13 +66,4 @@ class RestaurantController extends AbstractController
         $jsonRestaurant = $serializer->serialize($restaurant, 'json', ['groups' => 'showRestaurants']);
         return new JsonResponse($jsonRestaurant, Response::HTTP_CREATED, [], true);
     }
-
-    // #[Route('/api/restaurants/{id}', name: 'restaurants.getOne', methods: ['GET'])]
-    // public function getOneRestaurant(RestaurantRepository $repository, SerializerInterface $serializer, int $id): JsonResponse
-    // {
-    //     $restaurant = $repository->find($id);
-    //     $data = $serializer->serialize($restaurant, 'json');
-    //     return new JsonResponse($data, Response::HTTP_OK, [], true);
-    // }
-
 }
