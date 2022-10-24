@@ -72,6 +72,7 @@ class UsersRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('u')
             ->setFirstResult($offset)
             ->setMaxResults($limit)
+            ->where('u.status = `true`')
             ->getQuery()
             ->getResult();
     }

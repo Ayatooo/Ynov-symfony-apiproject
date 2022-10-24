@@ -71,6 +71,7 @@ class RestaurantRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('r')
             ->setFirstResult($offset)
             ->setMaxResults($limit)
+            ->where('r.status = `true`')
             ->getQuery()
             ->getResult()
         ;

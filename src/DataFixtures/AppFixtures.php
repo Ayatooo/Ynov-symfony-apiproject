@@ -27,7 +27,7 @@ class AppFixtures extends Fixture
             ->setUserEmail($this->faker->email())
             ->setUserLastName($this->faker->lastName())
             ->setUserPassword($this->faker->password())
-            ->setStatus($this->faker->boolean());
+            ->setStatus($this->faker->randomElement(['true', 'false']));
             $manager->persist($user);
 
             $restaurant = new Restaurant();
@@ -37,7 +37,7 @@ class AppFixtures extends Fixture
                 ->setRestaurantLongitude($this->faker->longitude())
                 ->setRestaurantPhone($this->faker->optional($weight= 0.8)->phoneNumber())
                 ->setRestaurantOwner($user)
-                ->setStatus(rand(0, 1));
+                ->setStatus($this->faker->randomElement(['true', 'false']));
             $manager->persist($restaurant);
         }
         $manager->flush();
