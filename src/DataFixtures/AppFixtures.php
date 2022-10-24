@@ -20,14 +20,14 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        
+
         for ($i = 0; $i < 100; $i++) {
             $user = new Users();
             $user->setUserFirstName($this->faker->firstName())
-            ->setUserEmail($this->faker->email())
-            ->setUserLastName($this->faker->lastName())
-            ->setUserPassword($this->faker->password())
-            ->setStatus($this->faker->randomElement(['true', 'false']));
+                ->setUserEmail($this->faker->email())
+                ->setUserLastName($this->faker->lastName())
+                ->setUserPassword($this->faker->password())
+                ->setStatus($this->faker->randomElement(['true', 'false']));
             $manager->persist($user);
 
             $restaurant = new Restaurant();
@@ -35,7 +35,7 @@ class AppFixtures extends Fixture
                 ->setRestaurantDescription($this->faker->text(10))
                 ->setRestaurantLatitude($this->faker->latitude())
                 ->setRestaurantLongitude($this->faker->longitude())
-                ->setRestaurantPhone($this->faker->optional($weight= 0.8)->phoneNumber())
+                ->setRestaurantPhone($this->faker->optional($weight = 0.8)->phoneNumber())
                 ->setRestaurantOwner($user)
                 ->setStatus($this->faker->randomElement(['true', 'false']));
             $manager->persist($restaurant);

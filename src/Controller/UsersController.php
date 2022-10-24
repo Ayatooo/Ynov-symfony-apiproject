@@ -27,7 +27,7 @@ class UsersController extends AbstractController
 
     #[Route('/api/users', name: 'users.getAll', methods: ['GET'])]
     public function getUsers(Request $request, UsersRepository $repository, SerializerInterface $serializer): JsonResponse
-    {   
+    {
         $page = $request->query->get('page', 1);
         $limit = $request->query->get('limit', 5);
         $limit = $limit > 20 ? 20 : $limit;
@@ -58,7 +58,7 @@ class UsersController extends AbstractController
     {
         $data = $request->getContent();
         $users = $serializer->deserialize($data, Users::class, 'json');
-        $users->setStatus(true);
+        $users->setStatus("true");
         $errors = $validator->validate($users);
         if ($errors->count() > 0) {
             return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
