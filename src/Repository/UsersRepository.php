@@ -39,6 +39,19 @@ class UsersRepository extends ServiceEntityRepository
         }
     }
 
+    public function findWithPagination(int $page, int $limit): array
+    {
+        $offset = ($page - 1) * $limit;
+
+        return $this->createQueryBuilder('u')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->where('u.status = :status')
+            ->setParameter('status', "true")
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Users[] Returns an array of Users objects
     //     */
@@ -63,18 +76,4 @@ class UsersRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-
-
-    public function findWithPagination(int $page, int $limit): array
-    {
-        $offset = ($page - 1) * $limit;
-
-        return $this->createQueryBuilder('u')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->where('u.status = :status')
-            ->setParameter('status', "true")
-            ->getQuery()
-            ->getResult();
-    }
 }
