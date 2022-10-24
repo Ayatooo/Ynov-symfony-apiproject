@@ -14,7 +14,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $exception = $event->getThrowable();
         if ($exception instanceof \Exception) {
             $event->setResponse(new JsonResponse([
-                "error" => "Quelque chose s'est mal passé",
+                "error" => $exception->getMessage(),
             ]));
         } else {
             $data = [

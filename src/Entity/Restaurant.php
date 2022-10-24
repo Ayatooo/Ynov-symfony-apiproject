@@ -39,8 +39,9 @@ class Restaurant
     #[Groups(['showRestaurants'])]
     private ?string $restaurantPhone = null;
 
-    #[ORM\Column]
-    private ?bool $status = null;
+    #[Assert\Choice(choices: ["true", "false"], message: 'Le statut doit être true ou false')]
+    #[ORM\Column(length: 255, nullable: false)]
+    private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'userRestaurant')]
     private ?Users $restaurantOwner = null;
@@ -110,12 +111,12 @@ class Restaurant
         return $this;
     }
 
-    public function isStatus(): ?bool
+    public function isStatus(): ?string
     {
         return $this->status;
     }
 
-    public function setStatus(bool $status): self
+    public function setStatus(string $status): self
     {
         $this->status = $status;
 

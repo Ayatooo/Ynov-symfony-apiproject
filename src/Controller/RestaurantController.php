@@ -47,21 +47,21 @@ class RestaurantController extends AbstractController
     {
         $restaurant->setStatus(false);
         $entityManager->flush();
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], false);
+        return new JsonResponse($serializer->serialize("Delete done !", 'json', ['groups' => 'showRestaurants']), Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/restaurants', name: 'restaurants.create', methods: ['POST'])]
     public function createRestaurant(ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request, UsersRepository $usersRepository): JsonResponse
     {
         $restaurant = $serializer->deserialize($request->getContent(), Restaurant::class, 'json');
-        $restaurant->setStatus(true);
+        $restaurant->setStatus("true");
 
         $content = $request->toArray();
         $idOwner = $content['idOwner'];
         $owner = $usersRepository->find($idOwner);
 
         $errors = $validator->validate($restaurant);
-        if (count($errors) > 0) {
+        if ($errors->count() > 0) {
             return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
         }
 
