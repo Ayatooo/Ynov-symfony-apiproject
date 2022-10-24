@@ -7,6 +7,7 @@ use App\Repository\UsersRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
 class Users
@@ -16,18 +17,30 @@ class Users
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank(message: 'Le prénom est obligatoire')]
+    #[Assert\NotNull()]
+    #[Assert\Length(min: 3, minMessage: 'Le prénom doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
     #[Groups(['showUsers'])]
     private ?string $userFirstName = null;
 
+    #[Assert\NotBlank(message: 'Le nom est obligatoire')]
+    #[Assert\NotNull()]
+    #[Assert\Length(min: 3, minMessage: 'Le nom doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
     #[Groups(['showUsers'])]
     private ?string $userLastName = null;
 
+    #[Assert\NotBlank(message: 'Le mail est obligatoire')]
+    #[Assert\NotNull()]
+    #[Assert\Length(min: 3, minMessage: 'Le mail doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
     #[Groups(['showUsers'])]
     private ?string $userEmail = null;
 
+    #[Assert\NotBlank(message: 'Le mot de passe est obligatoire')]
+    #[Assert\NotNull()]
+    #[Assert\Length(min: 8, minMessage: 'Le mot de passe doit faire au moins 8 caractères')]
     #[ORM\Column(length: 255)]
     private ?string $userPassword = null;
 
