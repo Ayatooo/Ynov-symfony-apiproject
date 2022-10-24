@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RestaurantRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RestaurantRepository::class)]
 class Restaurant
@@ -14,6 +15,9 @@ class Restaurant
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank(message: 'Le nom du restaurant est obligatoire')]
+    #[Assert\NotNull()]
+    #[Assert\Length(min: 3, minMessage: 'Le nom du restaurant doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
     #[Groups(['showRestaurants'])]
     private ?string $restaurantName = null;

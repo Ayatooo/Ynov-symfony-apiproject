@@ -3,16 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\Restaurant;
-use App\Repository\RestaurantRepository;
 use App\Repository\UsersRepository;
+use App\Repository\RestaurantRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RestaurantController extends AbstractController
 {
@@ -50,7 +51,7 @@ class RestaurantController extends AbstractController
     }
 
     #[Route('/api/restaurants', name: 'restaurants.create', methods: ['POST'])]
-    public function createRestaurant(SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request, UsersRepository $usersRepository): JsonResponse
+    public function createRestaurant(ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request, UsersRepository $usersRepository): JsonResponse
     {
         $restaurant = $serializer->deserialize($request->getContent(), Restaurant::class, 'json');
         $restaurant->setStatus(true);
@@ -58,6 +59,12 @@ class RestaurantController extends AbstractController
         $content = $request->toArray();
         $idOwner = $content['idOwner'];
         $owner = $usersRepository->find($idOwner);
+
+        $errors = $validator->validate($restaurant);
+        if (count($errors) > 0) {
+            return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+        }
+
         $restaurant->setRestaurantOwner($owner);
 
 
