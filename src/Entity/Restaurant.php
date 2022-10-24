@@ -19,23 +19,24 @@ class Restaurant
     #[Assert\NotNull()]
     #[Assert\Length(min: 3, minMessage: 'Le nom du restaurant doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
-    #[Groups(['showRestaurants'])]
+    #[Groups(['getRestaurant'], ['getOneRestaurant'], ['createRestaurant'], ['deleteRestaurant'])]
     private ?string $restaurantName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['showRestaurants'])]
+    #[Groups(['getRestaurant'], ['getOneRestaurant'], ['createRestaurant'], ['deleteRestaurant'])]
     private ?string $restaurantLatitude = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['showRestaurants'])]
+    #[Groups(['getRestaurant'], ['getOneRestaurant'], ['createRestaurant'], ['deleteRestaurant'])]
     private ?string $restaurantLongitude = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['showRestaurants'])]
+    #[Groups(['getRestaurant'], ['getOneRestaurant'], ['createRestaurant'], ['deleteRestaurant'])]
     private ?string $restaurantDescription = null;
 
+    #[Assert\Length(max: 20, maxMessage: 'Le téléphone ne doit pas faire plus de 20 caractères')]
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['showRestaurants'])]
+    #[Groups(['getRestaurant'], ['getOneRestaurant'], ['createRestaurant'], ['deleteRestaurant'])]
     private ?string $restaurantPhone = null;
 
     #[ORM\Column]
