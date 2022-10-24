@@ -27,9 +27,13 @@ class RestaurantController extends AbstractController
     }
 
     #[Route('/api/restaurants', name: 'restaurants.getAll', methods: ['GET'])]
-    public function getRestaurant(RestaurantRepository $repository, SerializerInterface $serializer): JsonResponse
+    public function getRestaurant(RestaurantRepository $repository, SerializerInterface $serializer, Request $request): JsonResponse
     {
-        $restaurants = $repository->findAll();
+        $page = $request->query->get('page', 1);
+        $limit = $request->query->get('limit', 5);
+        $limit = $limit > 20 ? 20 : $limit;
+        
+        $restaurants = $repository->findWithPagination($page, $limit);
         $data = $serializer->serialize($restaurants, 'json', ['groups' => 'showRestaurants']);
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
