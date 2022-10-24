@@ -5,3 +5,4 @@ vich_uploader:
         pictures:
             uri_prefix: /assets/pictures
             upload_destination: '%kernel.project_dir%/public/assets/pictures'
+            namer: Vich\UploaderBundle\Naming\OrignameNamer

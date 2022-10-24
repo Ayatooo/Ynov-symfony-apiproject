@@ -4,8 +4,12 @@ namespace App\Entity;
 
 use App\Repository\PictureRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: PictureRepository::class)]
+/**
+ * @Vich\Uploadable()
+ */
 class Picture
 {
     #[ORM\Id]
@@ -27,6 +31,12 @@ class Picture
 
     #[ORM\Column(length: 20)]
     private ?string $status = null;
+
+    /**
+     * @var File|null
+     *@Vich\UploadableField(mapping="pictures", fileNameProperty="realName")
+     */
+    private ?$file;
 
     public function getId(): ?int
     {
@@ -89,6 +99,18 @@ class Picture
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getFile(): ?File
+    {
+        return $this->file;
+    }
+
+    public function setFile(?File $file): self
+    {
+        $this->file = $file;
 
         return $this;
     }
