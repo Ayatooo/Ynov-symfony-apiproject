@@ -5,10 +5,12 @@ namespace App\Controller;
 use App\Entity\Users;
 use App\Repository\UsersRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
@@ -45,5 +47,22 @@ class UsersController extends AbstractController
         $users->setStatus(false);
         $entityManager->flush();
         return new JsonResponse('User deleted', Response::HTTP_OK);
+    }
+
+    #[Route('/api/users', name: 'users.create', methods: ['POST'])]
+    public function createUser(ValidatorInterface $validator, Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = $request->getContent();
+        $users = $serializer->deserialize($data, Users::class, 'json');
+        $users->setStatus(true);
+        $errors = $validator->validate($users);
+        if ($errors->count() > 0) {
+            return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+        }
+        $entityManager->persist($users);
+        $entityManager->flush();
+        $jsonUser = $serializer->serialize($users, 'json', ['groups' => 'showUsers']);
+
+        return new JsonResponse($jsonUser, Response::HTTP_CREATED, [], true);
     }
 }
