@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\Users;
+use App\Entity\RestaurantOwner;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Users>
+ * @extends ServiceEntityRepository<RestaurantOwner>
  *
- * @method Users|null find($id, $lockMode = null, $lockVersion = null)
- * @method Users|null findOneBy(array $criteria, array $orderBy = null)
- * @method Users[]    findAll()
- * @method Users[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method RestaurantOwner|null find($id, $lockMode = null, $lockVersion = null)
+ * @method RestaurantOwner|null findOneBy(array $criteria, array $orderBy = null)
+ * @method RestaurantOwner[]    findAll()
+ * @method RestaurantOwner[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UsersRepository extends ServiceEntityRepository
+class RestaurantOwnerRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Users::class);
+        parent::__construct($registry, RestaurantOwner::class);
     }
 
-    public function save(Users $entity, bool $flush = false): void
+    public function save(RestaurantOwner $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class UsersRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(Users $entity, bool $flush = false): void
+    public function remove(RestaurantOwner $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -53,7 +53,7 @@ class UsersRepository extends ServiceEntityRepository
     }
 
     //    /**
-    //     * @return Users[] Returns an array of Users objects
+    //     * @return RestaurantOwner[] Returns an array of RestaurantOwner objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -67,7 +67,7 @@ class UsersRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Users
+    //    public function findOneBySomeField($value): ?RestaurantOwner
     //    {
     //        return $this->createQueryBuilder('u')
     //            ->andWhere('u.exampleField = :val')

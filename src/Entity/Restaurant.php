@@ -44,7 +44,7 @@ class Restaurant
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'userRestaurant')]
-    private ?Users $restaurantOwner = null;
+    private ?RestaurantOwner $restaurantOwner = null;
 
     public function getId(): ?int
     {
@@ -123,12 +123,12 @@ class Restaurant
         return $this;
     }
 
-    public function getRestaurantOwner(): ?Users
+    public function getRestaurantOwner(): ?RestaurantOwner
     {
         return $this->restaurantOwner;
     }
 
-    public function setRestaurantOwner(?Users $restaurantOwner): self
+    public function setRestaurantOwner(?RestaurantOwner $restaurantOwner): self
     {
         $this->restaurantOwner = $restaurantOwner;
 

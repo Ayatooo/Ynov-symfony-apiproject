@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Restaurant;
-use App\Repository\UsersRepository;
+use App\Repository\RestaurantOwnerRepository;
 use App\Repository\RestaurantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -57,7 +57,7 @@ class RestaurantController extends AbstractController
 
     #[Route('/api/restaurants', name: 'restaurants.create', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour accéder à cette ressource')]
-    public function createRestaurant(ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request, UsersRepository $usersRepository): JsonResponse
+    public function createRestaurant(ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request, restaurantOwnerRepository $usersRepository): JsonResponse
     {
         $restaurant = $serializer->deserialize($request->getContent(), Restaurant::class, 'json');
         $restaurant->setStatus("true");

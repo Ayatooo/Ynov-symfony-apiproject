@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Users;
-use App\Repository\UsersRepository;
+use App\Entity\RestaurantOwner;
+use App\Repository\RestaurantOwnerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,19 +14,19 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
-class UsersController extends AbstractController
+class RestaurantOwnerController extends AbstractController
 {
     #[Route('/users', name: 'app_users')]
     public function index(): JsonResponse
     {
         return $this->json([
             'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/UsersController.php',
+            'path' => 'src/Controller/RestaurantOwnerController.php',
         ]);
     }
 
     #[Route('/api/users', name: 'users.getAll', methods: ['GET'])]
-    public function getUsers(Request $request, UsersRepository $repository, SerializerInterface $serializer): JsonResponse
+    public function getUsers(Request $request, RestaurantOwnerRepository $repository, SerializerInterface $serializer): JsonResponse
     {
         $page = $request->query->get('page', 1);
         $limit = $request->query->get('limit', 5);
@@ -39,14 +39,14 @@ class UsersController extends AbstractController
 
     #[Route('/api/users/{idUsers}', name: 'users.getOne', methods: ['GET'])]
     #[ParamConverter('users', options: ['id' => 'idUsers'])]
-    public function getOneUsers(Users $users, SerializerInterface $serializer): JsonResponse
+    public function getOneUsers(RestaurantOwner $users, SerializerInterface $serializer): JsonResponse
     {
         return new JsonResponse($serializer->serialize($users, 'json', ['groups' => 'showUsers']), Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/users/{idUsers}', name: 'users.delete', methods: ['DELETE'])]
     #[ParamConverter('users', options: ['id' => 'idUsers'])]
-    public function deleteUsers(Users $users, EntityManagerInterface $entityManager): JsonResponse
+    public function deleteUsers(RestaurantOwner $users, EntityManagerInterface $entityManager): JsonResponse
     {
         $users->setStatus(false);
         $entityManager->flush();
@@ -57,7 +57,7 @@ class UsersController extends AbstractController
     public function createUser(ValidatorInterface $validator, Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager): JsonResponse
     {
         $data = $request->getContent();
-        $users = $serializer->deserialize($data, Users::class, 'json');
+        $users = $serializer->deserialize($data, RestaurantOwner::class, 'json');
         $users->setStatus("true");
         $errors = $validator->validate($users);
         if ($errors->count() > 0) {

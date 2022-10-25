@@ -3,14 +3,14 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\UsersRepository;
+use App\Repository\RestaurantOwnerRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: UsersRepository::class)]
-class Users
+#[ORM\Entity(repositoryClass: RestaurantOwnerRepository::class)]
+class RestaurantOwner
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -22,27 +22,27 @@ class Users
     #[Assert\Length(min: 3, minMessage: 'Le prénom doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
     #[Groups(['showUsers'])]
-    private ?string $userFirstName = null;
+    private ?string $restaurantOwnerFirstName = null;
 
     #[Assert\NotBlank(message: 'Le nom est obligatoire')]
     #[Assert\NotNull()]
     #[Assert\Length(min: 3, minMessage: 'Le nom doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
     #[Groups(['showUsers'])]
-    private ?string $userLastName = null;
+    private ?string $restaurantOwnerLastName = null;
 
     #[Assert\NotBlank(message: 'Le mail est obligatoire')]
     #[Assert\NotNull()]
     #[Assert\Length(min: 3, minMessage: 'Le mail doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
     #[Groups(['showUsers'])]
-    private ?string $userEmail = null;
+    private ?string $restaurantOwnerEmail = null;
 
     #[Assert\NotBlank(message: 'Le mot de passe est obligatoire')]
     #[Assert\NotNull()]
     #[Assert\Length(min: 8, minMessage: 'Le mot de passe doit faire au moins 8 caractères')]
     #[ORM\Column(length: 255)]
-    private ?string $userPassword = null;
+    private ?string $restaurantOwnerPassword = null;
 
     #[Assert\Choice(choices: ["true", "false"], message: 'Le statut doit être true ou false')]
     #[ORM\Column(length: 255, nullable: false)]
@@ -61,50 +61,50 @@ class Users
         return $this->id;
     }
 
-    public function getUserFirstName(): ?string
+    public function getRestaurantOwnerFirstName(): ?string
     {
-        return $this->userFirstName;
+        return $this->restaurantOwnerFirstName;
     }
 
-    public function setUserFirstName(string $userFirstName): self
+    public function setRestaurantOwnerFirstName(string $restaurantOwnerFirstName): self
     {
-        $this->userFirstName = $userFirstName;
+        $this->restaurantOwnerFirstName = $restaurantOwnerFirstName;
 
         return $this;
     }
 
-    public function getUserLastName(): ?string
+    public function getRestaurantOwnerLastName(): ?string
     {
-        return $this->userLastName;
+        return $this->restaurantOwnerLastName;
     }
 
-    public function setUserLastName(string $userLastName): self
+    public function setRestaurantOwnerLastName(string $restaurantOwnerLastName): self
     {
-        $this->userLastName = $userLastName;
+        $this->restaurantOwnerLastName = $restaurantOwnerLastName;
 
         return $this;
     }
 
-    public function getUserEmail(): ?string
+    public function getRestaurantOwnerEmail(): ?string
     {
-        return $this->userEmail;
+        return $this->restaurantOwnerEmail;
     }
 
-    public function setUserEmail(string $userEmail): self
+    public function setRestaurantOwnerEmail(string $restaurantOwnerEmail): self
     {
-        $this->userEmail = $userEmail;
+        $this->restaurantOwnerEmail = $restaurantOwnerEmail;
 
         return $this;
     }
 
-    public function getUserPassword(): ?string
+    public function getRestaurantOwnerPassword(): ?string
     {
-        return $this->userPassword;
+        return $this->restaurantOwnerPassword;
     }
 
-    public function setUserPassword(string $userPassword): self
+    public function setRestaurantOwnerPassword(string $restaurantOwnerPassword): self
     {
-        $this->userPassword = $userPassword;
+        $this->restaurantOwnerPassword = $restaurantOwnerPassword;
 
         return $this;
     }

@@ -5,7 +5,7 @@ namespace App\DataFixtures;
 use Faker\Factory;
 use App\Entity\User;
 use Faker\Generator;
-use App\Entity\Users;
+use App\Entity\RestaurantOwner;
 use App\Entity\Restaurant;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -36,11 +36,11 @@ class AppFixtures extends Fixture
         $manager->persist($admin);
 
         for ($i = 0; $i < 100; $i++) {
-            $restaurantOwner = new Users();
-            $restaurantOwner->setUserFirstName($this->faker->firstName())
-                ->setUserEmail($this->faker->email())
-                ->setUserLastName($this->faker->lastName())
-                ->setUserPassword($this->faker->password())
+            $restaurantOwner = new RestaurantOwner();
+            $restaurantOwner->setRestaurantOwnerFirstName($this->faker->firstName())
+                ->setRestaurantOwnerEmail($this->faker->email())
+                ->setRestaurantOwnerLastName($this->faker->lastName())
+                ->setRestaurantOwnerPassword($this->faker->password())
                 ->setStatus($this->faker->randomElement(['true', 'false']));
             $manager->persist($restaurantOwner);
 
