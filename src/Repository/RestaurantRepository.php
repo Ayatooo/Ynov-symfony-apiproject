@@ -77,10 +77,16 @@ class RestaurantRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findClosestRestaurant($latitude, $longitude, $distance) {
+    public function findClosestRestaurant($latitude, $longitude, $distance)
+    {
         $sql = "SELECT *, ( 6371 * acos( cos( radians(:latitude) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * sin( radians( latitude ) ) ) ) AS distance FROM restaurant HAVING distance < :distance ORDER BY distance LIMIT 0 , 20";
-        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
-        $stmt->execute(['latitude' => $latitude, 'longitude' => $longitude, 'distance' => $distance]);
-        return $stmt->fetchAll();
+        //transformer la requete en requete doctrine
+        $query = $this->getEntityManager()->getConnection()->prepare($sql);
+        $query->execute([
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'distance' => $distance
+        ]);
+        return $query->fetchAll();
     }
 }

@@ -86,8 +86,7 @@ class RestaurantController extends AbstractController
 
         $restaurants = $restaurantRepository->findClosestRestaurant($latitude, $longitude, $distance);
 
-
-      
-        return new JsonResponse($data, Response::HTTP_OK, [], true);
+        $jsonRestaurant = $serializer->serialize($restaurants, 'json', ['groups' => 'showRestaurants']);
+        return new JsonResponse($jsonRestaurant, Response::HTTP_OK, [], true);
     }
 }
