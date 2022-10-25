@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use Faker\Factory;
+use App\Entity\User;
 use Faker\Generator;
 use App\Entity\Users;
 use App\Entity\Restaurant;
@@ -22,12 +23,17 @@ class AppFixtures extends Fixture
     {
 
         for ($i = 0; $i < 100; $i++) {
-            $user = new Users();
-            $user->setUserFirstName($this->faker->firstName())
+            $restaurantOwner = new Users();
+            $restaurantOwner->setUserFirstName($this->faker->firstName())
                 ->setUserEmail($this->faker->email())
                 ->setUserLastName($this->faker->lastName())
                 ->setUserPassword($this->faker->password())
                 ->setStatus($this->faker->randomElement(['true', 'false']));
+            $manager->persist($restaurantOwner);
+
+            $user = new User();
+            $user->setEmail($this->faker->email())
+                ->setPassword($this->faker->password());
             $manager->persist($user);
 
             $restaurant = new Restaurant();
@@ -36,7 +42,7 @@ class AppFixtures extends Fixture
                 ->setRestaurantLatitude($this->faker->latitude())
                 ->setRestaurantLongitude($this->faker->longitude())
                 ->setRestaurantPhone($this->faker->optional($weight = 0.8)->phoneNumber())
-                ->setRestaurantOwner($user)
+                ->setRestaurantOwner($restaurantOwner)
                 ->setStatus($this->faker->randomElement(['true', 'false']));
             $manager->persist($restaurant);
         }
