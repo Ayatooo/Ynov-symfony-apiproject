@@ -16,11 +16,16 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class PictureController extends AbstractController
 {
     #[Route('/api/pictures/{idPicture}', name: 'picture.getOne', methods: ['GET'])]
-    public function getPicture(int $idPicture, SerializerInterface $serializer, PictureRepository $pictureRepository, UrlGeneratorInterface $urlGenerator): JsonResponse
+    public function getPicture(int $idPicture, SerializerInterface $serializer, Request $request, PictureRepository $pictureRepository, UrlGeneratorInterface $urlGenerator): JsonResponse
     {
         $picture = $pictureRepository->find($idPicture);
+        $relativePath = $picture->getPublicPath() . '/' . $picture->getRealPath();
+        $location = $request->getUriForPath('/');
+        $location = str_replace('/assets', "assets", $relativePath);
+
+
         if($picture !== null) {
-            return new JsonResponse($serializer->serialize($picture, 'json', ['groups' => 'showPictures']), Response::HTTP_OK, [], true);
+            return new JsonResponse($serializer->serialize($picture, 'json', ['groups' => 'showPictures']), Response::HTTP_OK, ["Location" => $location], true);
         }
 
         return new JsonResponse(null, Response::HTTP_NOT_FOUND);
