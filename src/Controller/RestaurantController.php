@@ -76,4 +76,20 @@ class RestaurantController extends AbstractController
         $jsonRestaurant = $serializer->serialize($restaurant, 'json', ['groups' => 'showRestaurants']);
         return new JsonResponse($jsonRestaurant, Response::HTTP_CREATED, [], true);
     }
+
+    #[Route('/api/closest/restaurants/', name: 'restaurants.closest', methods: ['GET'])]
+    public function getClosestRestaurant(SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request): JsonResponse
+    {
+        // $content = $request->toArray();
+        // $latitude = $content['latitude'];
+        // $longitude = $content['longitude'];
+        // $distance = $content['distance'];
+
+        // dd($latitude, $longitude, $distance);
+        dd($request);
+
+        $restaurants = $entityManager->getRepository(Restaurant::class)->findClosestRestaurant($latitude, $longitude, $distance);
+        $data = $serializer->serialize($restaurants, 'json', ['groups' => 'showRestaurants']);
+        return new JsonResponse($data, Response::HTTP_OK, [], true);
+    }
 }
