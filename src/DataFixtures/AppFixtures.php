@@ -9,18 +9,31 @@ use App\Entity\Users;
 use App\Entity\Restaurant;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
     private Generator $faker;
+    private $userPasswordHasher;
 
-    public function __construct()
+
+    public function __construct(UserPasswordHasherInterface $userPasswordHasher)
     {
         $this->faker = Factory::create("fr_FR");
+        $this->userPasswordHasher = $userPasswordHasher;
     }
 
     public function load(ObjectManager $manager): void
     {
+
+
+        $admin = new User();
+        $password = "boursettes";
+        $adminEmail = "admin@gmail.com";
+        $admin->setEmail($adminEmail)
+            ->setPassword($this->userPasswordHasher->hashPassword($admin, $password))
+            ->setRoles(['ROLE_ADMIN']);
+        $manager->persist($admin);
 
         for ($i = 0; $i < 100; $i++) {
             $restaurantOwner = new Users();
@@ -32,8 +45,11 @@ class AppFixtures extends Fixture
             $manager->persist($restaurantOwner);
 
             $user = new User();
-            $user->setEmail($this->faker->email())
-                ->setPassword($this->faker->password());
+            $password = $this->faker->password(8, 10);
+            $userEmail = $this->faker->email();
+            $user->setEmail($userEmail)
+                ->setPassword($this->userPasswordHasher->hashPassword($user, $password))
+                ->setRoles(['ROLE_USER']);
             $manager->persist($user);
 
             $restaurant = new Restaurant();
