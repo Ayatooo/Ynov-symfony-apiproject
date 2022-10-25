@@ -48,6 +48,7 @@ class RestaurantController extends AbstractController
 
     #[Route('/api/restaurants/{idRestaurant}', name: 'restaurants.delete', methods: ['DELETE'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
     public function deleteRestaurant(Restaurant $restaurant, SerializerInterface $serializer, EntityManagerInterface $entityManager): JsonResponse
     {
         $restaurant->setStatus(false);
@@ -56,7 +57,7 @@ class RestaurantController extends AbstractController
     }
 
     #[Route('/api/restaurants', name: 'restaurants.create', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour accéder à cette ressource')]
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
     public function createRestaurant(ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request, restaurantOwnerRepository $usersRepository): JsonResponse
     {
         $restaurant = $serializer->deserialize($request->getContent(), Restaurant::class, 'json');

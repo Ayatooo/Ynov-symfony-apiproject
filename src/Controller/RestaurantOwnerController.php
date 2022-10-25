@@ -3,14 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\RestaurantOwner;
-use App\Repository\RestaurantOwnerRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\RestaurantOwnerRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
@@ -46,6 +47,7 @@ class RestaurantOwnerController extends AbstractController
 
     #[Route('/api/users/{idUsers}', name: 'users.delete', methods: ['DELETE'])]
     #[ParamConverter('users', options: ['id' => 'idUsers'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
     public function deleteUsers(RestaurantOwner $users, EntityManagerInterface $entityManager): JsonResponse
     {
         $users->setStatus(false);
@@ -54,6 +56,7 @@ class RestaurantOwnerController extends AbstractController
     }
 
     #[Route('/api/users', name: 'users.create', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
     public function createUser(ValidatorInterface $validator, Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager): JsonResponse
     {
         $data = $request->getContent();
