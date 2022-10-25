@@ -85,6 +85,7 @@ class RestaurantController extends AbstractController
         $distance = $request->query->get('distance');
 
         $restaurants = $restaurantRepository->findClosestRestaurant($latitude, $longitude, $distance);
+        dd($restaurants);
 
         $jsonRestaurant = $serializer->serialize($restaurants, 'json', ['groups' => 'showRestaurants']);
         return new JsonResponse($jsonRestaurant, Response::HTTP_OK, [], true);
