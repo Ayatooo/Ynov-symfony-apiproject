@@ -1,0 +1,24 @@
+2ème fonctionnalité : Notes
+
+Le but est que chaque user puisse noter une fois tous les restaurants qu'ils veulent
+Les restaurants ont plusieurs notes et ont chacun une moyenne de ces dernières
+Il faut donc créer une table Rates qui contient les notes des users pour les restaurants
+Les users et les restaurants auront donc une clé étrangère vers cette table
+
+Il faudra donc faire un RateController qui gèrera les routes suivantes :
+- /rates/new : permet de créer une nouvelle note
+- /rates/edit : permet de modifier une note
+- /rates/delete : permet de supprimer une note
+- /rates/show : permet d'afficher une note
+- /rates/index : permet d'afficher toutes les notes
+
+Ces routes devront être sécurisées par un middleware qui vérifiera que l'utilisateur est connecté
+Et vérifier le rôle de l'utilisateur (admin ou user) pour les routes de modification et de suppression
+
+La suppression sera un SoftDelete (on ne supprime pas vraiment l'entrée de la base de données, on met juste un booléen is_alive à false pour ne pas l'afficher)
+
+Il y aura aussi un RateRepository qui gérera les requêtes SQL pour les notes
+
+Il y aura aussi le RateEntity qui représentera une note
+
+Il faudra également mettre en place les fixtures pour les notes afin de pouvoir tester le tout
