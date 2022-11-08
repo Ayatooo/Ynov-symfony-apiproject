@@ -2,6 +2,7 @@
 
 Le but est que chaque user puisse noter une fois tous les restaurants qu'ils veulent
 Les restaurants ont plusieurs notes et ont chacun une moyenne de ces dernières
+La moyenne se calculera dans la requête SQL
 Il faut donc créer une table Rates qui contient les notes des users pour les restaurants
 Les users et les restaurants auront donc une clé étrangère vers cette table
 
@@ -12,8 +13,9 @@ Il faudra donc faire un RateController qui gèrera les routes suivantes :
 - /rates/show : permet d'afficher une note
 - /rates/index : permet d'afficher toutes les notes
 
-Ces routes devront être sécurisées par un middleware qui vérifiera que l'utilisateur est connecté
-Et vérifier le rôle de l'utilisateur (admin ou user) pour les routes de modification et de suppression
+Ces routes devront être sécurisées (seul un user connecté peut noter un restaurant)
+Les users doivent pouvoir créer une note, la modifier et la supprimer. Ils pourront également voir la moyenne du restaurant
+Les admins peuvent effectuer toutes les actions sur les notes
 
 La suppression sera un SoftDelete (on ne supprime pas vraiment l'entrée de la base de données, on met juste un booléen is_alive à false pour ne pas l'afficher)
 

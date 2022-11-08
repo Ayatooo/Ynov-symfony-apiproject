@@ -60,12 +60,14 @@ class RestaurantRepository extends ServiceEntityRepository
         $sql = "SELECT *, ( 6371 * acos( cos( radians(:latitude) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * sin( radians( latitude ) ) ) ) AS distance FROM restaurant HAVING distance < :distance ORDER BY distance LIMIT 0 , 20";
         //transformer la requete en requete doctrine
         $query = $this->getEntityManager()->getConnection()->prepare($sql);
+        dd('ttt');
         $query->execute([
             'latitude' => $latitude,
             'longitude' => $longitude,
             'distance' => $distance
         ]);
-        return $query->fetchAll();
+        dd($query);
+        // return $query->fetchAll();
         // $conn = $this->getEntityManager()->getConnection();
         // $sql = "SELECT *, ( 6371 * acos( cos( radians(:latitude) ) * cos( radians( restaurant_latitude ) ) * cos( radians( restaurant_longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * sin( radians( restaurant_latitude ) ) ) ) AS distance FROM restaurant HAVING distance < :distance ORDER BY distance LIMIT 0 , 20";
         // $stmt = $conn->prepare($sql);
