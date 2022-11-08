@@ -57,42 +57,20 @@ class RestaurantRepository extends ServiceEntityRepository
 
     public function findClosestRestaurant($latitude, $longitude, $distance)
     {
-        $sql = "SELECT *, ( 6371 * acos( cos( radians(:latitude) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * sin( radians( latitude ) ) ) ) AS distance FROM restaurant HAVING distance < :distance ORDER BY distance LIMIT 0 , 20";
-        //transformer la requete en requete doctrine
-        $query = $this->getEntityManager()->getConnection()->prepare($sql);
-        dd('ttt');
-        $query->execute([
-            'latitude' => $latitude,
-            'longitude' => $longitude,
-            'distance' => $distance
-        ]);
-        dd($query);
-        // return $query->fetchAll();
-        // $conn = $this->getEntityManager()->getConnection();
-        // $sql = "SELECT *, ( 6371 * acos( cos( radians(:latitude) ) * cos( radians( restaurant_latitude ) ) * cos( radians( restaurant_longitude ) - radians(:longitude) ) + sin( radians(:latitude) ) * sin( radians( restaurant_latitude ) ) ) ) AS distance FROM restaurant HAVING distance < :distance ORDER BY distance LIMIT 0 , 20";
-        // $stmt = $conn->prepare($sql);
-        // $stmt->executeQuery(['latitude' => $latitude, 'longitude' => $longitude, 'distance' => $distance]);
-
-        // return $stmt->fetchAll();
-
-        $rsm = new ResultSetMapping;
-        $entityManager = $this->getEntityManager();
-        $rsm = new ResultSetMappingBuilder($entityManager);
-        $rsm->addRootEntityFromClassMetadata('App\Entity\Restaurant', 'r');
-
-        // $rsm->addEntityResult('App\Entity\Restaurant', 'r');
-        // $rsm->addFieldResult('r', 'id', 'id');
-        // $rsm->addFieldResult('r', 'restaurant_name', 'restaurantName');
-        // $rsm->addFieldResult('r', 'restaurant_description', 'restaurant_description');
-        // $rsm->addFieldResult('r', 'restaurant_latitude', 'restaurant_latitude');
-        // $rsm->addFieldResult('r', 'restaurant_longitude', 'restaurant_longitude');
-        // $rsm->addFieldResult('r', 'restaurant_address', 'restaurant_address');
-        // $rsm->addFieldResult('r', 'restaurant_phone', 'restaurant_phone');
-
-        $query = $this->_em->createNativeQuery('SELECT id FROM restaurant', $rsm);
-        // $query->setParameter(1, 'romanb');
-
-        $users = $query->getResult();
-        return $users;
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
+        $rsm->addRootEntityFromClassMetadata(Restaurant::class, 'r');
+        $query = $this->getEntityManager()->createNativeQuery(
+            'SELECT *,
+            (6371 * acos(cos(radians(:latitude)) * cos(radians(r.restaurant_latitude)) * cos(radians(r.restaurant_longitude) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(r.restaurant_latitude)))) AS restaurant_distance
+            FROM restaurant r
+            WHERE r.status = "true"
+            HAVING restaurant_distance < :distance
+            ORDER BY restaurant_distance',
+            $rsm
+        );
+        $query->setParameter('latitude', $latitude);
+        $query->setParameter('longitude', $longitude);
+        $query->setParameter('distance', $distance);
+        return $query->getResult();
     }
 }

@@ -39,6 +39,10 @@ class Restaurant
     #[Groups(['showRestaurants'])]
     private ?string $restaurantPhone = null;
 
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['showRestaurants'])]
+    private ?float $restaurantDistance = null;
+
     #[Assert\Choice(choices: ["true", "false"], message: 'Le statut doit être true ou false')]
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $status = null;
@@ -119,6 +123,18 @@ class Restaurant
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getRestaurantDistance(): ?float
+    {
+        return $this->restaurantDistance;
+    }
+
+    public function setRestaurantDistance(?float $restaurantDistance): self
+    {
+        $this->restaurantDistance = $restaurantDistance;
 
         return $this;
     }
