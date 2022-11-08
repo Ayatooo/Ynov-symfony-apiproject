@@ -55,8 +55,10 @@ class RestaurantRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findClosestRestaurant($latitude, $longitude, $distance)
+    public function findClosestRestaurant($latitude, $longitude, $distance, int $page, int $limit): array
     {
+        $offset = ($page - 1) * $limit;
+
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata(Restaurant::class, 'r');
         $query = $this->getEntityManager()->createNativeQuery(
@@ -65,12 +67,17 @@ class RestaurantRepository extends ServiceEntityRepository
             FROM restaurant r
             WHERE r.status = "true"
             HAVING restaurant_distance < :distance
-            ORDER BY restaurant_distance',
+            ORDER BY restaurant_distance
+            LIMIT :limiteValue
+            OFFSET :offsetValue',
             $rsm
         );
         $query->setParameter('latitude', $latitude);
         $query->setParameter('longitude', $longitude);
         $query->setParameter('distance', $distance);
+        $query->setParameter('offsetValue', $offset);
+        $query->setParameter('limiteValue', $limit);
+
         return $query->getResult();
     }
 }

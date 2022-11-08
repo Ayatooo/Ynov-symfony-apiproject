@@ -83,11 +83,15 @@ class RestaurantController extends AbstractController
     #[Route('/api/closest/restaurants/', name: 'restaurants.closest', methods: ['GET'])]
     public function getClosestRestaurant(SerializerInterface $serializer, Request $request, RestaurantRepository $restaurantRepository): JsonResponse
     {
+        $page = $request->query->get('page', 1);
+        $limit = $request->query->get('limit', 5);
+        $limit = $limit > 20 ? 20 : $limit;
+
         $latitude = $request->query->get('latitude');
         $longitude = $request->query->get('longitude');
         $distance = $request->query->get('distance');
 
-        $restaurants = $restaurantRepository->findClosestRestaurant($latitude, $longitude, $distance);
+        $restaurants = $restaurantRepository->findClosestRestaurant($latitude, $longitude, $distance, $page, $limit);
 
         $jsonRestaurant = $serializer->serialize($restaurants, 'json', ['groups' => 'showRestaurants']);
         return new JsonResponse($jsonRestaurant, Response::HTTP_OK, [], true);
