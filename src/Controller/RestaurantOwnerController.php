@@ -11,7 +11,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
-use Symfony\Component\Serializer\SerializerInterface;
+use JMS\Serializer\SerializerInterface;
+use JMS\Serializer\Serializer;
+use JMS\Serializer\SerializationContext;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,7 +41,8 @@ class RestaurantOwnerController extends AbstractController
             echo 'Cache saved 🧙‍♂️';
             $item->tag('restaurantOwnerCache');
             $users = $repository->findWithPagination($page, $limit);
-            return $serializer->serialize($users, 'json', ['groups' => 'showUsers']);
+            $context = SerializationContext::create()->setGroups(['showRestaurantOwners']);
+            return $serializer->serialize($users, 'json', $context);
         });
 
         return new JsonResponse($data, Response::HTTP_OK, [], true);
@@ -53,7 +56,8 @@ class RestaurantOwnerController extends AbstractController
         $data = $cache->get($idCache, function (ItemInterface $item) use ($users, $serializer) {
             echo 'Cache saved 🧙‍♂️';
             $item->tag('restaurantOwnerCache');
-            return $serializer->serialize($users, 'json', ['groups' => 'showUsers']);
+            $context = SerializationContext::create()->setGroups(['showRestaurantOwners']);
+            return $serializer->serialize($users, 'json', $context);
         });
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
@@ -83,7 +87,8 @@ class RestaurantOwnerController extends AbstractController
         }
         $entityManager->persist($users);
         $entityManager->flush();
-        $jsonUser = $serializer->serialize($users, 'json', ['groups' => 'showUsers']);
+        $context = SerializationContext::create()->setGroups(['showRestaurantOwners']);
+        $jsonUser = $serializer->serialize($users, 'json', $context);
 
         return new JsonResponse($jsonUser, Response::HTTP_CREATED, [], true);
     }
