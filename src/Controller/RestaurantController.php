@@ -48,9 +48,15 @@ class RestaurantController extends AbstractController
 
     #[Route('/api/restaurants/{idRestaurant}', name: 'restaurants.getOne', methods: ['GET'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
-    public function getOneRestaurant(Restaurant $restaurant, SerializerInterface $serializer): JsonResponse
+    public function getOneRestaurant(Restaurant $restaurant, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
-        return new JsonResponse($serializer->serialize($restaurant, 'json', ['groups' => 'showRestaurants']), Response::HTTP_OK, [], true);
+        $idCache = 'getOneRestaurant' . $restaurant->getId();
+        $data = $cache->get($idCache, function (ItemInterface $item) use ($restaurant, $serializer) {
+            echo 'Cache saved 🧙‍♂️';
+            $item->tag('restaurantCache');
+            return $serializer->serialize($restaurant, 'json', ['groups' => 'showRestaurants']);
+        });
+        return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/restaurants/{idRestaurant}', name: 'restaurants.delete', methods: ['DELETE'])]

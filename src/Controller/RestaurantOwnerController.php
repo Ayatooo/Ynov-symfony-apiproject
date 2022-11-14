@@ -47,9 +47,15 @@ class RestaurantOwnerController extends AbstractController
 
     #[Route('/api/users/{idUsers}', name: 'users.getOne', methods: ['GET'])]
     #[ParamConverter('users', options: ['id' => 'idUsers'])]
-    public function getOneUsers(RestaurantOwner $users, SerializerInterface $serializer): JsonResponse
+    public function getOneUsers(RestaurantOwner $users, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
-        return new JsonResponse($serializer->serialize($users, 'json', ['groups' => 'showUsers']), Response::HTTP_OK, [], true);
+        $idCache = 'getRestaurantOwner' . $users->getId();
+        $data = $cache->get($idCache, function (ItemInterface $item) use ($users, $serializer) {
+            echo 'Cache saved 🧙‍♂️';
+            $item->tag('restaurantOwnerCache');
+            return $serializer->serialize($users, 'json', ['groups' => 'showUsers']);
+        });
+        return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/users/{idUsers}', name: 'users.delete', methods: ['DELETE'])]
