@@ -37,10 +37,10 @@ class RestaurantController extends AbstractController
         $limit = $limit > 20 ? 20 : $limit;
 
         $idCache = 'getRestaurant';
-        $restaurants = $cache->get($idCache, function (ItemInterface $item) use ($repository, $serializer) {
-            echo 'je suis dans le cache';
+        $restaurants = $cache->get($idCache, function (ItemInterface $item) use ($repository, $serializer, $page, $limit) {
+            echo 'Cache saved 🧙‍♂️';
             $item->tag('restaurantCache');
-            $rest = $repository->findAll();
+            $rest = $repository->findWithPagination($page, $limit);
             return $serializer->serialize($rest, 'json', ['groups' => 'showRestaurants']);
         });
         // dd($repository->findAll());
@@ -62,9 +62,10 @@ class RestaurantController extends AbstractController
     #[Route('/api/restaurants/{idRestaurant}', name: 'restaurants.delete', methods: ['DELETE'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
-    public function deleteRestaurant(Restaurant $restaurant, SerializerInterface $serializer, EntityManagerInterface $entityManager): JsonResponse
+    public function deleteRestaurant(Restaurant $restaurant, SerializerInterface $serializer, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
     {
-        $restaurant->setStatus(false);
+        $cache->invalidateTags(['restaurantCache']);
+        $restaurant->setStatus("false");
         $entityManager->flush();
         return new JsonResponse($serializer->serialize("Delete done !", 'json', ['groups' => 'showRestaurants']), Response::HTTP_OK, [], true);
     }
