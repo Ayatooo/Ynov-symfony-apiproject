@@ -5,9 +5,21 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RestaurantRepository;
 use JMS\Serializer\Annotation as Serializer;
-use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
+/**
+ * @Hateoas\Relation(
+ *     "self",
+ *    href = @Hateoas\Route(
+ *    "restaurants.getOne",
+ *   parameters = {
+ *      "idRestaurant" = "expr(object.getId())"
+ *  }
+ * ),
+ *    exclusion = @Hateoas\Exclusion(groups={"showRestaurants"})
+ * )
+ */
 #[ORM\Entity(repositoryClass: RestaurantRepository::class)]
 class Restaurant
 {
