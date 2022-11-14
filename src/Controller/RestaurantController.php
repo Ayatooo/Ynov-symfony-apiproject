@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use JMS\Serializer\SerializerInterface;
-use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -31,7 +30,7 @@ class RestaurantController extends AbstractController
         ]);
     }
 
-    #[Route('/api/restaurants', name: 'restaurants.getAll', methods: ['GET'])]
+    #[Route('/api/restaurant', name: 'restaurant.getAll', methods: ['GET'])]
     public function getRestaurant(RestaurantRepository $repository, SerializerInterface $serializer, Request $request, TagAwareCacheInterface $cache): JsonResponse
     {
         $page = $request->query->get('page', 1);
@@ -42,14 +41,14 @@ class RestaurantController extends AbstractController
         $data = $cache->get($idCache, function (ItemInterface $item) use ($repository, $serializer, $page, $limit) {
             echo 'Cache saved 🧙‍♂️';
             $item->tag('restaurantCache');
-            $restaurants = $repository->findWithPagination($page, $limit);
-            $context = SerializationContext::create()->setGroups(['showRestaurants']);
-            return $serializer->serialize($restaurants, 'json', $context);
+            $restaurant = $repository->findWithPagination($page, $limit);
+            $context = SerializationContext::create()->setGroups(['showRestaurant']);
+            return $serializer->serialize($restaurant, 'json', $context);
         });
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/restaurants/{idRestaurant}', name: 'restaurants.getOne', methods: ['GET'])]
+    #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.getOne', methods: ['GET'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
     public function getOneRestaurant(Restaurant $restaurant, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
@@ -57,13 +56,36 @@ class RestaurantController extends AbstractController
         $data = $cache->get($idCache, function (ItemInterface $item) use ($restaurant, $serializer) {
             echo 'Cache saved 🧙‍♂️';
             $item->tag('restaurantCache');
-            $context = SerializationContext::create()->setGroups(['showRestaurants']);
+            $context = SerializationContext::create()->setGroups(['showRestaurant']);
             return $serializer->serialize($restaurant, 'json', $context);
         });
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/restaurants/{idRestaurant}', name: 'restaurants.delete', methods: ['DELETE'])]
+    #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.put', methods: ['PUT'])]
+    #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
+    public function updateRestaurant(Request $request, EntityManagerInterface $manager, SerializerInterface $serializer, ValidatorInterface $validator, Restaurant $restaurant, TagAwareCacheInterface $cache): JsonResponse
+    {
+        $data = $serializer->deserialize(
+            $request->getContent(),
+            Restaurant::class,
+            'json'
+        );
+
+        $restaurant->setRestaurantName($data->getRestaurantName() ? $data->getRestaurantName() : $restaurant->getRestaurantName());
+        $restaurant->setRestaurantPhone($data->getRestaurantPhone() ? $data->getRestaurantPhone() : $restaurant->getRestaurantPhone());
+        $restaurant->setRestaurantDescription($data->getRestaurantDescription() ? $data->getRestaurantDescription() : $restaurant->getRestaurantDescription());
+        $restaurant->setRestaurantLatitude($data->getRestaurantLatitude() ? $data->getRestaurantLatitude() : $restaurant->getRestaurantLatitude());
+        $restaurant->setRestaurantLongitude($data->getRestaurantLongitude() ? $data->getRestaurantLongitude() : $restaurant->getRestaurantLongitude());
+
+        $cache->invalidateTags(['restaurantCache']);
+        $context = SerializationContext::create()->setGroups(['showRestaurant']);
+        $response = $serializer->serialize($restaurant, 'json', $context);
+        return new JsonResponse($response, Response::HTTP_OK, [], true);
+    }
+
+    #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.delete', methods: ['DELETE'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
     public function deleteRestaurant(Restaurant $restaurant, SerializerInterface $serializer, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
@@ -74,7 +96,7 @@ class RestaurantController extends AbstractController
         return new JsonResponse('Restaurant supprimé', Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/restaurants', name: 'restaurants.create', methods: ['POST'])]
+    #[Route('/api/restaurant', name: 'restaurant.create', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
     public function createRestaurant(ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request, restaurantOwnerRepository $usersRepository, TagAwareCacheInterface $cache): JsonResponse
     {
@@ -95,12 +117,12 @@ class RestaurantController extends AbstractController
 
         $entityManager->persist($restaurant);
         $entityManager->flush();
-        $context = SerializationContext::create()->setGroups(['showRestaurants']);
+        $context = SerializationContext::create()->setGroups(['showRestaurant']);
         $jsonRestaurant = $serializer->serialize($restaurant, 'json', $context);
         return new JsonResponse($jsonRestaurant, Response::HTTP_CREATED, [], true);
     }
 
-    #[Route('/api/closest/restaurants/', name: 'restaurants.closest', methods: ['GET'])]
+    #[Route('/api/closest/restaurant/', name: 'restaurant.closest', methods: ['GET'])]
     public function getClosestRestaurant(SerializerInterface $serializer, Request $request, RestaurantRepository $restaurantRepository, TagAwareCacheInterface $cache): JsonResponse
     {
         $page = $request->query->get('page', 1);
@@ -115,9 +137,9 @@ class RestaurantController extends AbstractController
         $data = $cache->get($cacheId, function (ItemInterface $item) use ($restaurantRepository, $serializer, $page, $limit, $latitude, $longitude, $distance) {
             echo 'Cache saved 🧙‍♂️';
             $item->tag('restaurantCache');
-            $restaurants = $restaurantRepository->findClosestRestaurant($latitude, $longitude, $distance, $page, $limit);
-            $context = SerializationContext::create()->setGroups(['showRestaurants']);
-            return $serializer->serialize($restaurants, 'json', $context);
+            $restaurant = $restaurantRepository->findClosestRestaurant($latitude, $longitude, $distance, $page, $limit);
+            $context = SerializationContext::create()->setGroups(['showRestaurant']);
+            return $serializer->serialize($restaurant, 'json', $context);
         });
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }

@@ -12,7 +12,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use JMS\Serializer\SerializerInterface;
-use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -21,7 +20,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class RestaurantOwnerController extends AbstractController
 {
-    #[Route('/users', name: 'app_users')]
+    #[Route('/owner', name: 'app_owner')]
     public function index(): JsonResponse
     {
         return $this->json([
@@ -30,66 +29,66 @@ class RestaurantOwnerController extends AbstractController
         ]);
     }
 
-    #[Route('/api/users', name: 'users.getAll', methods: ['GET'])]
-    public function getUsers(Request $request, RestaurantOwnerRepository $repository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
+    #[Route('/api/owner', name: 'owner.getAll', methods: ['GET'])]
+    public function getOwner(Request $request, RestaurantOwnerRepository $repository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
         $page = $request->query->get('page', 1);
         $limit = $request->query->get('limit', 5);
         $limit = $limit > 20 ? 20 : $limit;
-        $idCache = 'getRestaurantOwners';
+        $idCache = 'getRestaurantOwner';
         $data = $cache->get($idCache, function (ItemInterface $item) use ($repository, $serializer, $page, $limit) {
             echo 'Cache saved 🧙‍♂️';
             $item->tag('restaurantOwnerCache');
-            $users = $repository->findWithPagination($page, $limit);
-            $context = SerializationContext::create()->setGroups(['showRestaurantOwners']);
-            return $serializer->serialize($users, 'json', $context);
+            $owner = $repository->findWithPagination($page, $limit);
+            $context = SerializationContext::create()->setGroups(['showRestaurantOwner']);
+            return $serializer->serialize($owner, 'json', $context);
         });
 
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/users/{idUsers}', name: 'users.getOne', methods: ['GET'])]
-    #[ParamConverter('users', options: ['id' => 'idUsers'])]
-    public function getOneUsers(RestaurantOwner $users, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
+    #[Route('/api/owner/{idOwner}', name: 'owner.getOne', methods: ['GET'])]
+    #[ParamConverter('owner', options: ['id' => 'idOwner'])]
+    public function getOneOwner(RestaurantOwner $owner, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
-        $idCache = 'getRestaurantOwner' . $users->getId();
-        $data = $cache->get($idCache, function (ItemInterface $item) use ($users, $serializer) {
+        $idCache = 'getRestaurantOwner' . $owner->getId();
+        $data = $cache->get($idCache, function (ItemInterface $item) use ($owner, $serializer) {
             echo 'Cache saved 🧙‍♂️';
             $item->tag('restaurantOwnerCache');
-            $context = SerializationContext::create()->setGroups(['showRestaurantOwners']);
-            return $serializer->serialize($users, 'json', $context);
+            $context = SerializationContext::create()->setGroups(['showRestaurantOwner']);
+            return $serializer->serialize($owner, 'json', $context);
         });
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/users/{idUsers}', name: 'users.delete', methods: ['DELETE'])]
-    #[ParamConverter('users', options: ['id' => 'idUsers'])]
+    #[Route('/api/owner/{idOwner}', name: 'owner.delete', methods: ['DELETE'])]
+    #[ParamConverter('owner', options: ['id' => 'idOwner'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
-    public function deleteUsers(RestaurantOwner $users, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
+    public function deleteowner(RestaurantOwner $owner, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
     {
         $cache->invalidateTags(['restaurantOwnerCache']);
-        $users->setStatus(false);
+        $owner->setStatus(false);
         $entityManager->flush();
-        return new JsonResponse('User deleted', Response::HTTP_OK);
+        return new JsonResponse('Owner deleted', Response::HTTP_OK);
     }
 
-    #[Route('/api/users', name: 'users.create', methods: ['POST'])]
+    #[Route('/api/owner', name: 'owner.create', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
-    public function createUser(ValidatorInterface $validator, Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
+    public function createOwner(ValidatorInterface $validator, Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
     {
         $cache->invalidateTags(['restaurantOwnerCache']);
         $data = $request->getContent();
-        $users = $serializer->deserialize($data, RestaurantOwner::class, 'json');
-        $users->setStatus("true");
-        $errors = $validator->validate($users);
+        $owner = $serializer->deserialize($data, RestaurantOwner::class, 'json');
+        $owner->setStatus("true");
+        $errors = $validator->validate($owner);
         if ($errors->count() > 0) {
             return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
         }
-        $entityManager->persist($users);
+        $entityManager->persist($owner);
         $entityManager->flush();
-        $context = SerializationContext::create()->setGroups(['showRestaurantOwners']);
-        $jsonUser = $serializer->serialize($users, 'json', $context);
+        $context = SerializationContext::create()->setGroups(['showRestaurantOwner']);
+        $jsonOwner = $serializer->serialize($owner, 'json', $context);
 
-        return new JsonResponse($jsonUser, Response::HTTP_CREATED, [], true);
+        return new JsonResponse($jsonOwner, Response::HTTP_CREATED, [], true);
     }
 }

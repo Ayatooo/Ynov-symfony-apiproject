@@ -12,12 +12,12 @@ use Hateoas\Configuration\Annotation as Hateoas;
  * @Hateoas\Relation(
  *     "self",
  *    href = @Hateoas\Route(
- *    "restaurants.getOne",
+ *    "restaurant.getOne",
  *   parameters = {
  *      "idRestaurant" = "expr(object.getId())"
  *  }
  * ),
- *    exclusion = @Hateoas\Exclusion(groups={"showRestaurants"})
+ *    exclusion = @Hateoas\Exclusion(groups={"showRestaurant"})
  * )
  */
 #[ORM\Entity(repositoryClass: RestaurantRepository::class)]
@@ -32,36 +32,36 @@ class Restaurant
     #[Assert\NotNull()]
     #[Assert\Length(min: 3, minMessage: 'Le nom du restaurant doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
-    #[Serializer\Groups(['showRestaurants'])]
+    #[Serializer\Groups(['showRestaurant'])]
     private ?string $restaurantName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Serializer\Groups(['showRestaurants'])]
+    #[Serializer\Groups(['showRestaurant'])]
     private ?string $restaurantLatitude = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Serializer\Groups(['showRestaurants'])]
+    #[Serializer\Groups(['showRestaurant'])]
     private ?string $restaurantLongitude = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Serializer\Groups(['showRestaurants'])]
+    #[Serializer\Groups(['showRestaurant'])]
     private ?string $restaurantDescription = null;
 
     #[Assert\Length(max: 20, maxMessage: 'Le téléphone ne doit pas faire plus de 20 caractères')]
     #[ORM\Column(length: 255, nullable: true)]
-    #[Serializer\Groups(['showRestaurants'])]
+    #[Serializer\Groups(['showRestaurant'])]
     private ?string $restaurantPhone = null;
 
     // #[ORM\Column(type: 'float', nullable: true)]
-    //     #[Serializer\Groups(['showRestaurants'])]
+    //     #[Serializer\Groups(['showRestaurant'])]
     // private ?float $restaurantDistance = null;
 
     #[Assert\Choice(choices: ["true", "false"], message: 'Le statut doit être true ou false')]
     #[ORM\Column(length: 255, nullable: false)]
-    #[Serializer\Groups(['showRestaurants'])]
+    #[Serializer\Groups(['showRestaurant'])]
     private ?string $status = null;
 
-    #[Serializer\Groups(['showRestaurants'])]
+    #[Serializer\Groups(['showRestaurant'])]
     #[ORM\ManyToOne(inversedBy: 'userRestaurant')]
     private ?RestaurantOwner $restaurantOwner = null;
 

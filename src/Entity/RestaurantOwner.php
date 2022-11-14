@@ -15,12 +15,12 @@ use Hateoas\Configuration\Annotation as Hateoas;
  * @Hateoas\Relation(
  *    "self",
  *   href = @Hateoas\Route(
- *  "users.getOne",
+ *  "owner.getOne",
  * parameters = {
- *    "idUsers" = "expr(object.getId())"
+ *    "idOwner" = "expr(object.getId())"
  * }
  * ),
- *  exclusion = @Hateoas\Exclusion(groups={"showRestaurantOwners", "showRestaurants"})
+ *  exclusion = @Hateoas\Exclusion(groups={"showRestaurantOwner", "showRestaurant"})
  * )
  */
 
@@ -36,21 +36,21 @@ class RestaurantOwner
     #[Assert\NotNull()]
     #[Assert\Length(min: 3, minMessage: 'Le prénom doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
-    #[Serializer\Groups(['showRestaurantOwners', 'showRestaurants'])]
+    #[Serializer\Groups(['showRestaurantOwner', 'showRestaurant'])]
     private ?string $restaurantOwnerFirstName = null;
 
     #[Assert\NotBlank(message: 'Le nom est obligatoire')]
     #[Assert\NotNull()]
     #[Assert\Length(min: 3, minMessage: 'Le nom doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
-    #[Serializer\Groups(['showRestaurantOwners', 'showRestaurants'])]
+    #[Serializer\Groups(['showRestaurantOwner', 'showRestaurant'])]
     private ?string $restaurantOwnerLastName = null;
 
     #[Assert\NotBlank(message: 'Le mail est obligatoire')]
     #[Assert\NotNull()]
     #[Assert\Length(min: 3, minMessage: 'Le mail doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
-    #[Serializer\Groups(['showRestaurantOwners', 'showRestaurants'])]
+    #[Serializer\Groups(['showRestaurantOwner', 'showRestaurant'])]
     private ?string $restaurantOwnerEmail = null;
 
     #[Assert\NotBlank(message: 'Le mot de passe est obligatoire')]
@@ -61,11 +61,11 @@ class RestaurantOwner
 
     #[Assert\Choice(choices: ["true", "false"], message: 'Le statut doit être true ou false')]
     #[ORM\Column(length: 255, nullable: false)]
-    #[Serializer\Groups(['showRestaurantOwners', 'showRestaurants'])]
+    #[Serializer\Groups(['showRestaurantOwner', 'showRestaurant'])]
     private ?string $status = null;
 
     #[ORM\OneToMany(mappedBy: 'restaurantOwner', targetEntity: Restaurant::class)]
-    #[Serializer\Groups(['showRestaurantOwners', 'showRestaurants'])]
+    #[Serializer\Groups(['showRestaurantOwner', 'showRestaurant'])]
     private Collection $userRestaurant;
 
     public function __construct()
