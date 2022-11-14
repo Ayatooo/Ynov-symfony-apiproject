@@ -15,6 +15,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class RestaurantController extends AbstractController
 {
@@ -28,15 +30,26 @@ class RestaurantController extends AbstractController
     }
 
     #[Route('/api/restaurants', name: 'restaurants.getAll', methods: ['GET'])]
-    public function getRestaurant(RestaurantRepository $repository, SerializerInterface $serializer, Request $request): JsonResponse
+    public function getRestaurant(RestaurantRepository $repository, SerializerInterface $serializer, Request $request, TagAwareCacheInterface $cache): JsonResponse
     {
         $page = $request->query->get('page', 1);
         $limit = $request->query->get('limit', 5);
         $limit = $limit > 20 ? 20 : $limit;
 
-        $restaurants = $repository->findWithPagination($page, $limit);
-        $data = $serializer->serialize($restaurants, 'json', ['groups' => 'showRestaurants']);
-        return new JsonResponse($data, Response::HTTP_OK, [], true);
+        $idCache = 'getRestaurant';
+        $restaurants = $cache->get($idCache, function (ItemInterface $item) use ($repository, $serializer) {
+            echo 'je suis dans le cache';
+            $item->tag('restaurantCache');
+            $rest = $repository->findAll();
+            return $serializer->serialize($rest, 'json', ['groups' => 'showRestaurants']);
+        });
+        // dd($repository->findAll());
+
+
+
+        // $restaurants = $repository->findWithPagination($page, $limit);
+        // $data = $serializer->serialize($restaurants, 'json', ['groups' => 'showRestaurants']);
+        return new JsonResponse($restaurants, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/restaurants/{idRestaurant}', name: 'restaurants.getOne', methods: ['GET'])]

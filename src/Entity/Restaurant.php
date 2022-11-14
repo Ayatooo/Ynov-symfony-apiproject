@@ -39,14 +39,16 @@ class Restaurant
     #[Groups(['showRestaurants'])]
     private ?string $restaurantPhone = null;
 
-    #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['showRestaurants'])]
-    private ?float $restaurantDistance = null;
+    // #[ORM\Column(type: 'float', nullable: true)]
+    // #[Groups(['showRestaurants'])]
+    // private ?float $restaurantDistance = null;
 
     #[Assert\Choice(choices: ["true", "false"], message: 'Le statut doit être true ou false')]
     #[ORM\Column(length: 255, nullable: false)]
+    #[Groups(['showRestaurants'])]
     private ?string $status = null;
 
+    #[Groups(['showRestaurants'])]
     #[ORM\ManyToOne(inversedBy: 'userRestaurant')]
     private ?RestaurantOwner $restaurantOwner = null;
 

@@ -21,21 +21,21 @@ class RestaurantOwner
     #[Assert\NotNull()]
     #[Assert\Length(min: 3, minMessage: 'Le prénom doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
-    #[Groups(['showUsers'])]
+    #[Groups(['showUsers', 'showRestaurants'])]
     private ?string $restaurantOwnerFirstName = null;
 
     #[Assert\NotBlank(message: 'Le nom est obligatoire')]
     #[Assert\NotNull()]
     #[Assert\Length(min: 3, minMessage: 'Le nom doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
-    #[Groups(['showUsers'])]
+    #[Groups(['showUsers', 'showRestaurants'])]
     private ?string $restaurantOwnerLastName = null;
 
     #[Assert\NotBlank(message: 'Le mail est obligatoire')]
     #[Assert\NotNull()]
     #[Assert\Length(min: 3, minMessage: 'Le mail doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
-    #[Groups(['showUsers'])]
+    #[Groups(['showUsers', 'showRestaurants'])]
     private ?string $restaurantOwnerEmail = null;
 
     #[Assert\NotBlank(message: 'Le mot de passe est obligatoire')]
