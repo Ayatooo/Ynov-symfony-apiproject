@@ -4,11 +4,13 @@ namespace App\Controller;
 
 use App\Entity\RestaurantOwner;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use App\Repository\RestaurantOwnerRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -27,14 +29,19 @@ class RestaurantOwnerController extends AbstractController
     }
 
     #[Route('/api/users', name: 'users.getAll', methods: ['GET'])]
-    public function getUsers(Request $request, RestaurantOwnerRepository $repository, SerializerInterface $serializer): JsonResponse
+    public function getUsers(Request $request, RestaurantOwnerRepository $repository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
         $page = $request->query->get('page', 1);
         $limit = $request->query->get('limit', 5);
         $limit = $limit > 20 ? 20 : $limit;
+        $idCache = 'getRestaurantOwners';
+        $data = $cache->get($idCache, function (ItemInterface $item) use ($repository, $serializer, $page, $limit) {
+            echo 'Cache saved 🧙‍♂️';
+            $item->tag('restaurantOwnerCache');
+            $users = $repository->findWithPagination($page, $limit);
+            return $serializer->serialize($users, 'json', ['groups' => 'showUsers']);
+        });
 
-        $users = $repository->findWithPagination($page, $limit);
-        $data = $serializer->serialize($users, 'json', ['groups' => 'showUsers']);
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
@@ -48,8 +55,9 @@ class RestaurantOwnerController extends AbstractController
     #[Route('/api/users/{idUsers}', name: 'users.delete', methods: ['DELETE'])]
     #[ParamConverter('users', options: ['id' => 'idUsers'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
-    public function deleteUsers(RestaurantOwner $users, EntityManagerInterface $entityManager): JsonResponse
+    public function deleteUsers(RestaurantOwner $users, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
     {
+        $cache->invalidateTags(['restaurantOwnerCache']);
         $users->setStatus(false);
         $entityManager->flush();
         return new JsonResponse('User deleted', Response::HTTP_OK);
@@ -57,8 +65,9 @@ class RestaurantOwnerController extends AbstractController
 
     #[Route('/api/users', name: 'users.create', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
-    public function createUser(ValidatorInterface $validator, Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager): JsonResponse
+    public function createUser(ValidatorInterface $validator, Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
     {
+        $cache->invalidateTags(['restaurantOwnerCache']);
         $data = $request->getContent();
         $users = $serializer->deserialize($data, RestaurantOwner::class, 'json');
         $users->setStatus("true");

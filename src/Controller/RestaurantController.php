@@ -37,19 +37,13 @@ class RestaurantController extends AbstractController
         $limit = $limit > 20 ? 20 : $limit;
 
         $idCache = 'getRestaurant';
-        $restaurants = $cache->get($idCache, function (ItemInterface $item) use ($repository, $serializer, $page, $limit) {
+        $data = $cache->get($idCache, function (ItemInterface $item) use ($repository, $serializer, $page, $limit) {
             echo 'Cache saved 🧙‍♂️';
             $item->tag('restaurantCache');
-            $rest = $repository->findWithPagination($page, $limit);
-            return $serializer->serialize($rest, 'json', ['groups' => 'showRestaurants']);
+            $restaurants = $repository->findWithPagination($page, $limit);
+            return $serializer->serialize($restaurants, 'json', ['groups' => 'showRestaurants']);
         });
-        // dd($repository->findAll());
-
-
-
-        // $restaurants = $repository->findWithPagination($page, $limit);
-        // $data = $serializer->serialize($restaurants, 'json', ['groups' => 'showRestaurants']);
-        return new JsonResponse($restaurants, Response::HTTP_OK, [], true);
+        return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/restaurants/{idRestaurant}', name: 'restaurants.getOne', methods: ['GET'])]
@@ -72,8 +66,9 @@ class RestaurantController extends AbstractController
 
     #[Route('/api/restaurants', name: 'restaurants.create', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
-    public function createRestaurant(ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request, restaurantOwnerRepository $usersRepository): JsonResponse
+    public function createRestaurant(ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request, restaurantOwnerRepository $usersRepository, TagAwareCacheInterface $cache): JsonResponse
     {
+        $cache->invalidateTags(['restaurantCache']);
         $restaurant = $serializer->deserialize($request->getContent(), Restaurant::class, 'json');
         $restaurant->setStatus("true");
 
