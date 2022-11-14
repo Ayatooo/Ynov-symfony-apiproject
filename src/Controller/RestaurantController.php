@@ -96,7 +96,7 @@ class RestaurantController extends AbstractController
     }
 
     #[Route('/api/closest/restaurants/', name: 'restaurants.closest', methods: ['GET'])]
-    public function getClosestRestaurant(SerializerInterface $serializer, Request $request, RestaurantRepository $restaurantRepository): JsonResponse
+    public function getClosestRestaurant(SerializerInterface $serializer, Request $request, RestaurantRepository $restaurantRepository, TagAwareCacheInterface $cache): JsonResponse
     {
         $page = $request->query->get('page', 1);
         $limit = $request->query->get('limit', 5);
@@ -106,9 +106,13 @@ class RestaurantController extends AbstractController
         $longitude = $request->query->get('longitude');
         $distance = $request->query->get('distance');
 
-        $restaurants = $restaurantRepository->findClosestRestaurant($latitude, $longitude, $distance, $page, $limit);
-
-        $jsonRestaurant = $serializer->serialize($restaurants, 'json', ['groups' => 'showRestaurants']);
-        return new JsonResponse($jsonRestaurant, Response::HTTP_OK, [], true);
+        $cacheId = 'getClosestRestaurant' . $latitude . $longitude . $distance;
+        $data = $cache->get($cacheId, function (ItemInterface $item) use ($restaurantRepository, $serializer, $page, $limit, $latitude, $longitude, $distance) {
+            echo 'Cache saved 🧙‍♂️';
+            $item->tag('restaurantCache');
+            $restaurants = $restaurantRepository->findClosestRestaurant($latitude, $longitude, $distance, $page, $limit);
+            return $serializer->serialize($restaurants, 'json', ['groups' => 'showRestaurants']);
+        });
+        return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 }

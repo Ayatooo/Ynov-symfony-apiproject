@@ -77,7 +77,6 @@ class RestaurantRepository extends ServiceEntityRepository
         $query->setParameter('distance', $distance);
         $query->setParameter('offsetValue', $offset);
         $query->setParameter('limiteValue', $limit);
-
         return $query->getResult();
     }
 }
