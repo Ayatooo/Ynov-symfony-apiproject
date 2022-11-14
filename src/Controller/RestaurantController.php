@@ -11,7 +11,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\SerializerInterface;
+use JMS\Serializer\SerializerInterface;
+use JMS\Serializer\Serializer;
+use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -41,7 +43,8 @@ class RestaurantController extends AbstractController
             echo 'Cache saved 🧙‍♂️';
             $item->tag('restaurantCache');
             $restaurants = $repository->findWithPagination($page, $limit);
-            return $serializer->serialize($restaurants, 'json', ['groups' => 'showRestaurants']);
+            $context = SerializationContext::create()->setGroups(['showRestaurants']);
+            return $serializer->serialize($restaurants, 'json', $context);
         });
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
@@ -54,7 +57,8 @@ class RestaurantController extends AbstractController
         $data = $cache->get($idCache, function (ItemInterface $item) use ($restaurant, $serializer) {
             echo 'Cache saved 🧙‍♂️';
             $item->tag('restaurantCache');
-            return $serializer->serialize($restaurant, 'json', ['groups' => 'showRestaurants']);
+            $context = SerializationContext::create()->setGroups(['showRestaurants']);
+            return $serializer->serialize($restaurant, 'json', $context);
         });
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
@@ -67,7 +71,7 @@ class RestaurantController extends AbstractController
         $cache->invalidateTags(['restaurantCache']);
         $restaurant->setStatus("false");
         $entityManager->flush();
-        return new JsonResponse($serializer->serialize("Delete done !", 'json', ['groups' => 'showRestaurants']), Response::HTTP_OK, [], true);
+        return new JsonResponse('Restaurant supprimé', Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/restaurants', name: 'restaurants.create', methods: ['POST'])]
@@ -91,7 +95,8 @@ class RestaurantController extends AbstractController
 
         $entityManager->persist($restaurant);
         $entityManager->flush();
-        $jsonRestaurant = $serializer->serialize($restaurant, 'json', ['groups' => 'showRestaurants']);
+        $context = SerializationContext::create()->setGroups(['showRestaurants']);
+        $jsonRestaurant = $serializer->serialize($restaurant, 'json', $context);
         return new JsonResponse($jsonRestaurant, Response::HTTP_CREATED, [], true);
     }
 
@@ -111,7 +116,8 @@ class RestaurantController extends AbstractController
             echo 'Cache saved 🧙‍♂️';
             $item->tag('restaurantCache');
             $restaurants = $restaurantRepository->findClosestRestaurant($latitude, $longitude, $distance, $page, $limit);
-            return $serializer->serialize($restaurants, 'json', ['groups' => 'showRestaurants']);
+            $context = SerializationContext::create()->setGroups(['showRestaurants']);
+            return $serializer->serialize($restaurants, 'json', $context);
         });
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }

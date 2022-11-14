@@ -4,7 +4,8 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RestaurantRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation as Serializer;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RestaurantRepository::class)]
@@ -19,36 +20,36 @@ class Restaurant
     #[Assert\NotNull()]
     #[Assert\Length(min: 3, minMessage: 'Le nom du restaurant doit faire au moins 3 caractères')]
     #[ORM\Column(length: 255)]
-    #[Groups(['showRestaurants'])]
+    #[Serializer\Groups(['showRestaurants'])]
     private ?string $restaurantName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['showRestaurants'])]
+    #[Serializer\Groups(['showRestaurants'])]
     private ?string $restaurantLatitude = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['showRestaurants'])]
+    #[Serializer\Groups(['showRestaurants'])]
     private ?string $restaurantLongitude = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['showRestaurants'])]
+    #[Serializer\Groups(['showRestaurants'])]
     private ?string $restaurantDescription = null;
 
     #[Assert\Length(max: 20, maxMessage: 'Le téléphone ne doit pas faire plus de 20 caractères')]
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['showRestaurants'])]
+    #[Serializer\Groups(['showRestaurants'])]
     private ?string $restaurantPhone = null;
 
     // #[ORM\Column(type: 'float', nullable: true)]
-    // #[Groups(['showRestaurants'])]
+    //     #[Serializer\Groups(['showRestaurants'])]
     // private ?float $restaurantDistance = null;
 
     #[Assert\Choice(choices: ["true", "false"], message: 'Le statut doit être true ou false')]
     #[ORM\Column(length: 255, nullable: false)]
-    #[Groups(['showRestaurants'])]
+    #[Serializer\Groups(['showRestaurants'])]
     private ?string $status = null;
 
-    #[Groups(['showRestaurants'])]
+    #[Serializer\Groups(['showRestaurants'])]
     #[ORM\ManyToOne(inversedBy: 'userRestaurant')]
     private ?RestaurantOwner $restaurantOwner = null;
 
