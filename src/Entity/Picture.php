@@ -17,23 +17,23 @@ class Picture
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['showPictures'])]
+    #[Groups(['showPicture'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['showPictures'])]
+    #[Groups(['showPicture'])]
     private ?string $realName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['showPictures'])]
+    #[Groups(['showPicture'])]
     private ?string $realPath = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['showPictures'])]
+    #[Groups(['showPicture'])]
     private ?string $publicPath = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['showPictures'])]
+    #[Groups(['showPicture'])]
     private ?string $mimeType = null;
 
     #[ORM\Column(length: 20)]
