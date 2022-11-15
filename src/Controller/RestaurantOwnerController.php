@@ -17,6 +17,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use Nelmio\ApiDocBundle\Annotation\Model;
+
+
 
 class RestaurantOwnerController extends AbstractController
 {
@@ -29,6 +34,35 @@ class RestaurantOwnerController extends AbstractController
         ]);
     }
 
+    /**
+     * Get a list of restaurants owners.
+     */
+    #[OA\Tag(name: 'restaurants owners')]
+    #[Security(name: 'Bearer')]
+    #[OA\Parameter(
+        name: 'page',
+        in: 'query',
+        description: 'The page number',
+        required: false,
+        example: 1,
+        schema: new OA\Schema(type: 'integer')
+    )]
+    #[OA\Parameter(
+        name: 'limit',
+        in: 'query',
+        description: 'The number of items per page',
+        required: false,
+        example: 10,
+        schema: new OA\Schema(type: 'integer')
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(new Model(type: RestaurantOwner::class))
+        )
+    )]
     #[Route('/api/owner', name: 'owner.getAll', methods: ['GET'])]
     public function getOwner(Request $request, RestaurantOwnerRepository $repository, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
     {
@@ -47,6 +81,16 @@ class RestaurantOwnerController extends AbstractController
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * Get one restaurant owner.
+     */
+    #[OA\Tag(name: 'restaurants owners')]
+    #[Security(name: 'Bearer')]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new Model(type: RestaurantOwner::class)
+    )]
     #[Route('/api/owner/{idOwner}', name: 'owner.getOne', methods: ['GET'])]
     #[ParamConverter('owner', options: ['id' => 'idOwner'])]
     public function getOneOwner(RestaurantOwner $owner, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
@@ -61,6 +105,15 @@ class RestaurantOwnerController extends AbstractController
         return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * Soft delete for a restaurant owner.
+     */
+    #[OA\Tag(name: 'restaurants owners')]
+    #[Security(name: 'Bearer')]
+    #[OA\Response(
+        response: 200,
+        description: 'Owner deleted',
+    )]
     #[Route('/api/owner/{idOwner}', name: 'owner.delete', methods: ['DELETE'])]
     #[ParamConverter('owner', options: ['id' => 'idOwner'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
@@ -72,6 +125,11 @@ class RestaurantOwnerController extends AbstractController
         return new JsonResponse('Owner deleted', Response::HTTP_OK);
     }
 
+    /**
+     * Create a restaurant owner.
+     */
+    #[OA\Tag(name: 'restaurants owners')]
+    #[Security(name: 'Bearer')]
     #[Route('/api/owner', name: 'owner.create', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
     public function createOwner(ValidatorInterface $validator, Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
