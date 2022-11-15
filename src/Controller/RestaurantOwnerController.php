@@ -150,6 +150,19 @@ class RestaurantOwnerController extends AbstractController
         return new JsonResponse($jsonOwner, Response::HTTP_CREATED, [], true);
     }
 
+    /**
+     * Update a restaurant owner.
+     */
+    #[OA\Tag(name: 'restaurants owners')]
+    #[Security(name: 'Bearer')]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(new Model(type: RestaurantOwner::class))
+        )
+    )]
     #[Route('/api/owner/{idOwner}', name: 'owner.update', methods: ['PUT'])]
     #[ParamConverter('owner', options: ['id' => 'idOwner'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
