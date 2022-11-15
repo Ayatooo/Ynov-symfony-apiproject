@@ -2,19 +2,13 @@
 
 namespace App\Controller;
 
-use OA\Tag;
-use OA\Schema;
-use OA\Parameter;
-use OA\Description;
 use App\Entity\Restaurant;
-use OpenApi\Annotations as OA;
-use OpenApi\Annotations\Items;
-use OpenApi\Annotations\JsonContent;
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use JMS\Serializer\SerializerInterface;
 use App\Repository\RestaurantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Contracts\Cache\ItemInterface;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use App\Repository\RestaurantOwnerRepository;
@@ -41,22 +35,37 @@ class RestaurantController extends AbstractController
 
     /**
      * Get a list of restaurants.
-     * @OA\Tag(name="restaurants")
-     * @Route("/api/restaurant", methods={"GET"})
-     * @Security(name="Bearer")
-     * @OA\Parameter(
-     *      name="page",
-     *      in="query",
-     *      description="Page number",
-     *      @OA\Schema(type="integer")
-     *  )
-     * @OA\Parameter(
-     *      name="limit",
-     *      in="query",
-     *      description="Number of items per page",
-     *      @OA\Schema(type="integer")
-     *  )
      */
+    #[OA\Response(
+        response: 200,
+        description: 'Returns a list of restaurants',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(new Model(type: Restaurant::class))
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'No restaurants found',
+    )]
+    #[OA\Parameter(
+        name: 'page',
+        in: 'query',
+        description: 'The page number',
+        required: false,
+        example: 1,
+        schema: new OA\Schema(type: 'integer')
+    )]
+    #[OA\Parameter(
+        name: 'limit',
+        in: 'query',
+        description: 'The number of items per page',
+        required: false,
+        example: 10,
+        schema: new OA\Schema(type: 'integer')
+    )]
+    #[OA\Tag(name: 'restaurants')]
+    #[Security(name: 'Bearer')]
     #[Route('/api/restaurant', name: 'restaurant.getAll', methods: ['GET'])]
     public function getRestaurant(RestaurantRepository $repository, SerializerInterface $serializer, Request $request, TagAwareCacheInterface $cache): JsonResponse
     {
@@ -77,10 +86,9 @@ class RestaurantController extends AbstractController
 
     /**
      * Get details of a restaurant.
-     * @OA\Tag(name="restaurants")
-     * @Route("/api/restaurant/{idRestaurant}", methods={"GET"})
-     * @Security(name="Bearer")
      */
+    #[OA\Tag(name: 'restaurants')]
+    #[Security(name: 'Bearer')]
     #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.getOne', methods: ['GET'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
     public function getOneRestaurant(Restaurant $restaurant, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
@@ -97,10 +105,9 @@ class RestaurantController extends AbstractController
 
     /**
      * Get update a restaurant.
-     * @OA\Tag(name="restaurants")
-     * @Route("/api/restaurant/{idRestaurant}", methods={"PUT"})
-     * @Security(name="Bearer")
      */
+    #[OA\Tag(name: 'restaurants')]
+    #[Security(name: 'Bearer')]
     #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.put', methods: ['PUT'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
@@ -126,10 +133,9 @@ class RestaurantController extends AbstractController
 
     /**
      * Soft delete for a restaurant.
-     * @OA\Tag(name="restaurants")
-     * @Route("/api/restaurant/{idRestaurant}", methods={"DELETE"})
-     * @Security(name="Bearer")
      */
+    #[OA\Tag(name: 'restaurants')]
+    #[Security(name: 'Bearer')]
     #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.delete', methods: ['DELETE'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
@@ -143,10 +149,9 @@ class RestaurantController extends AbstractController
 
     /**
      * Create a restaurant.
-     * @OA\Tag(name="restaurants")
-     * @Route("/api/restaurant", methods={"POST"})
-     * @Security(name="Bearer")
      */
+    #[OA\Tag(name: 'restaurants')]
+    #[Security(name: 'Bearer')]
     #[Route('/api/restaurant', name: 'restaurant.create', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
     public function createRestaurant(ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request, restaurantOwnerRepository $usersRepository, TagAwareCacheInterface $cache): JsonResponse
@@ -175,10 +180,9 @@ class RestaurantController extends AbstractController
 
     /**
      * Get a list of restaurants based on latitude and longitude.
-     * @OA\Tag(name="restaurants")
-     * @Route("/api/closest/restaurant/", methods={"GET"})
-     * @Security(name="Bearer")
      */
+    #[OA\Tag(name: 'restaurants')]
+    #[Security(name: 'Bearer')]
     #[Route('/api/closest/restaurant/', name: 'restaurant.closest', methods: ['GET'])]
     public function getClosestRestaurant(SerializerInterface $serializer, Request $request, RestaurantRepository $restaurantRepository, TagAwareCacheInterface $cache): JsonResponse
     {
