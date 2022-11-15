@@ -130,9 +130,13 @@ class RestaurantController extends AbstractController
         description: 'Bad request',
     )]
     #[OA\RequestBody(
+        request: 'RestaurantData',
+        description: 'You doesn\'t have to fill all the fields',
         required: true,
-        description: 'Update a restaurant',
-        content: new Model(type: Restaurant::class)
+        content: new OA\JsonContent(
+            type: 'object',
+            ref: '#/components/schemas/RestaurantData'
+        )
     )]
     #[OA\Tag(name: 'restaurants')]
     #[Security(name: 'Bearer')]
@@ -190,6 +194,20 @@ class RestaurantController extends AbstractController
      */
     #[OA\Tag(name: 'restaurants')]
     #[Security(name: 'Bearer')]
+    #[OA\RequestBody(
+        request: 'RestaurantData',
+        description: 'You have to fill all the fields',
+        required: true,
+        content: new OA\JsonContent(
+            type: 'object',
+            ref: '#/components/schemas/RestaurantData'
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Restaurant créé',
+        content: new Model(type: Restaurant::class)
+    )]
     #[Route('/api/restaurant', name: 'restaurant.create', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
     public function createRestaurant(ValidatorInterface $validator, SerializerInterface $serializer, EntityManagerInterface $entityManager, Request $request, restaurantOwnerRepository $usersRepository, TagAwareCacheInterface $cache): JsonResponse

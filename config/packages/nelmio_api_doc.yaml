@@ -25,6 +25,24 @@ nelmio_api_doc:
             restaurant_owner_email:
               type: string
               example: romain@silvy.com
+        RestaurantData:
+          type: object
+          properties:
+            restaurant_name:
+              type: string
+              example: Le petit resto
+            restaurant_latitude:
+              type: string
+              example: 48.856614
+            restaurant_longitude:
+              type: string
+              example: 2.3522219
+            restaurant_phone:
+              type: string
+              example: 0123456789
+            restaurant_description:
+              type: string
+              example: Un petit resto sympa
     security:
       - Bearer: []
  
