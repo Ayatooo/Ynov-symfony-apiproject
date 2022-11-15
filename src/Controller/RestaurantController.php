@@ -111,7 +111,7 @@ class RestaurantController extends AbstractController
     #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.put', methods: ['PUT'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
-    public function updateRestaurant(Request $request, EntityManagerInterface $manager, SerializerInterface $serializer, ValidatorInterface $validator, Restaurant $restaurant, TagAwareCacheInterface $cache): JsonResponse
+    public function updateRestaurant(Request $request, EntityManagerInterface $manager, SerializerInterface $serializer, Restaurant $restaurant, TagAwareCacheInterface $cache): JsonResponse
     {
         $data = $serializer->deserialize(
             $request->getContent(),
