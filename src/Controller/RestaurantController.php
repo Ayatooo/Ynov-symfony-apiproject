@@ -128,6 +128,8 @@ class RestaurantController extends AbstractController
         $cache->invalidateTags(['restaurantCache']);
         $context = SerializationContext::create()->setGroups(['showRestaurant']);
         $response = $serializer->serialize($restaurant, 'json', $context);
+        $manager->persist($restaurant);
+        $manager->flush();
         return new JsonResponse($response, Response::HTTP_OK, [], true);
     }
 
