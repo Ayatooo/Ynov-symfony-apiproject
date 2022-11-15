@@ -128,6 +128,20 @@ class RestaurantOwnerController extends AbstractController
     /**
      * Create a restaurant owner.
      */
+    #[OA\RequestBody(
+        request: 'RestaurantOwnerData',
+        description: 'You have to fill all the fields',
+        required: true,
+        content: new OA\JsonContent(
+            type: 'object',
+            ref: '#/components/schemas/RestaurantOwnerData'
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new Model(type: RestaurantOwner::class)
+    )]
     #[OA\Tag(name: 'restaurants owners')]
     #[Security(name: 'Bearer')]
     #[Route('/api/owner', name: 'owner.create', methods: ['POST'])]
@@ -161,6 +175,15 @@ class RestaurantOwnerController extends AbstractController
         content: new OA\JsonContent(
             type: 'array',
             items: new OA\Items(new Model(type: RestaurantOwner::class))
+        )
+    )]
+    #[OA\RequestBody(
+        request: 'RestaurantOwnerData',
+        description: 'You doesn\'t have to fill all the fields',
+        required: true,
+        content: new OA\JsonContent(
+            type: 'object',
+            ref: '#/components/schemas/RestaurantOwnerData'
         )
     )]
     #[Route('/api/owner/{idOwner}', name: 'owner.update', methods: ['PUT'])]

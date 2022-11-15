@@ -2,8 +2,8 @@ nelmio_api_doc:
   models: { use_jms: false }
   documentation:
     info:
-      title: BileMoAPI
-      description: This is an awesome API REST for BileMo!
+      title: Eat Api Documentation
+      description: This is an awesome API REST to find restaurants!
       version: 1.0.0
     components:
       securitySchemes:
@@ -12,6 +12,19 @@ nelmio_api_doc:
           scheme: bearer
           bearerFormat: JWT
           in: header
+      schemas:
+        RestaurantOwnerData:
+          type: object
+          properties:
+            restaurant_owner_first_name:
+              type: string
+              example: romain
+            restaurant_owner_last_name:
+              type: string
+              example: silvy
+            restaurant_owner_email:
+              type: string
+              example: romain@silvy.com
     security:
       - Bearer: []
  
