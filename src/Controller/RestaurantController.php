@@ -21,6 +21,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\VarExporter\Internal\Values;
 
 class RestaurantController extends AbstractController
 {
@@ -38,7 +39,7 @@ class RestaurantController extends AbstractController
      */
     #[OA\Response(
         response: 200,
-        description: 'Returns a list of restaurants',
+        description: 'Successful response',
         content: new OA\JsonContent(
             type: 'array',
             items: new OA\Items(new Model(type: Restaurant::class))
@@ -87,6 +88,15 @@ class RestaurantController extends AbstractController
     /**
      * Get details of a restaurant.
      */
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new Model(type: Restaurant::class)
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Restaurant not found',
+    )]
     #[OA\Tag(name: 'restaurants')]
     #[Security(name: 'Bearer')]
     #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.getOne', methods: ['GET'])]
@@ -104,8 +114,26 @@ class RestaurantController extends AbstractController
     }
 
     /**
-     * Get update a restaurant.
+     * Update a restaurant.
      */
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new Model(type: Restaurant::class)
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Restaurant not found',
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Bad request',
+    )]
+    #[OA\RequestBody(
+        required: true,
+        description: 'Update a restaurant',
+        content: new Model(type: Restaurant::class)
+    )]
     #[OA\Tag(name: 'restaurants')]
     #[Security(name: 'Bearer')]
     #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.put', methods: ['PUT'])]
