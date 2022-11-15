@@ -117,11 +117,11 @@ class RestaurantOwnerController extends AbstractController
     #[Route('/api/owner/{idOwner}', name: 'owner.delete', methods: ['DELETE'])]
     #[ParamConverter('owner', options: ['id' => 'idOwner'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
-    public function deleteowner(RestaurantOwner $owner, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
+    public function deleteowner(RestaurantOwner $owner, EntityManagerInterface $manager, TagAwareCacheInterface $cache): JsonResponse
     {
         $cache->invalidateTags(['restaurantOwnerCache']);
-        $owner->setStatus(false);
-        $entityManager->flush();
+        $owner->setStatus("false");
+        $manager->flush();
         return new JsonResponse('Owner deleted', Response::HTTP_OK);
     }
 
@@ -132,7 +132,7 @@ class RestaurantOwnerController extends AbstractController
     #[Security(name: 'Bearer')]
     #[Route('/api/owner', name: 'owner.create', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
-    public function createOwner(ValidatorInterface $validator, Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
+    public function createOwner(ValidatorInterface $validator, Request $request, SerializerInterface $serializer, EntityManagerInterface $manager, TagAwareCacheInterface $cache): JsonResponse
     {
         $cache->invalidateTags(['restaurantOwnerCache']);
         $data = $request->getContent();
@@ -142,11 +142,34 @@ class RestaurantOwnerController extends AbstractController
         if ($errors->count() > 0) {
             return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
         }
-        $entityManager->persist($owner);
-        $entityManager->flush();
+        $manager->persist($owner);
+        $manager->flush();
         $context = SerializationContext::create()->setGroups(['showRestaurantOwner']);
         $jsonOwner = $serializer->serialize($owner, 'json', $context);
 
         return new JsonResponse($jsonOwner, Response::HTTP_CREATED, [], true);
+    }
+
+    #[Route('/api/owner/{idOwner}', name: 'owner.update', methods: ['PUT'])]
+    #[ParamConverter('owner', options: ['id' => 'idOwner'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
+    public function updateOwner(RestaurantOwner $owner, Request $request, SerializerInterface $serializer, EntityManagerInterface $manager, TagAwareCacheInterface $cache): JsonResponse
+    {
+        $data = $serializer->deserialize(
+            $request->getContent(),
+            RestaurantOwner::class,
+            'json',
+        );
+
+        $owner->setRestaurantOwnerFirstName($data->getRestaurantOwnerFirstName() ? $data->getRestaurantOwnerFirstName() : $owner->getRestaurantOwnerFirstName());
+        $owner->setRestaurantOwnerLastName($data->getRestaurantOwnerLastName() ? $data->getRestaurantOwnerLastName() : $owner->getRestaurantOwnerLastName());
+        $owner->setRestaurantOwnerEmail($data->getRestaurantOwnerEmail() ? $data->getRestaurantOwnerEmail() : $owner->getRestaurantOwnerEmail());
+        $owner->setRestaurantOwnerPassword($data->getRestaurantOwnerPassword() ? $data->getRestaurantOwnerPassword() : $owner->getRestaurantOwnerPassword());
+        $cache->invalidateTags(['restaurantOwnerCache']);
+        $context = SerializationContext::create()->setGroups(['showRestaurantOwner']);
+        $response = $serializer->serialize($owner, 'json', $context);
+        $manager->persist($owner);
+        $manager->flush();
+        return new JsonResponse($response, Response::HTTP_OK, [], true);
     }
 }

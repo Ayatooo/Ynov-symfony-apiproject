@@ -43,7 +43,7 @@ class Picture
      * @var File|null
      *@Vich\UploadableField(mapping="pictures", fileNameProperty="realPath")
      */
-    private ?File $file;
+    private ?File $file = null;
 
     public function getId(): ?int
     {

@@ -139,7 +139,7 @@ class RestaurantController extends AbstractController
     #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.put', methods: ['PUT'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
-    public function updateRestaurant(Request $request, EntityManagerInterface $manager, SerializerInterface $serializer, ValidatorInterface $validator, Restaurant $restaurant, TagAwareCacheInterface $cache): JsonResponse
+    public function updateRestaurant(Request $request, EntityManagerInterface $manager, SerializerInterface $serializer, Restaurant $restaurant, TagAwareCacheInterface $cache): JsonResponse
     {
         $data = $serializer->deserialize(
             $request->getContent(),
@@ -156,6 +156,8 @@ class RestaurantController extends AbstractController
         $cache->invalidateTags(['restaurantCache']);
         $context = SerializationContext::create()->setGroups(['showRestaurant']);
         $response = $serializer->serialize($restaurant, 'json', $context);
+        $manager->persist($restaurant);
+        $manager->flush();
         return new JsonResponse($response, Response::HTTP_OK, [], true);
     }
 
@@ -175,7 +177,7 @@ class RestaurantController extends AbstractController
     #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.delete', methods: ['DELETE'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
-    public function deleteRestaurant(Restaurant $restaurant, SerializerInterface $serializer, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
+    public function deleteRestaurant(Restaurant $restaurant, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
     {
         $cache->invalidateTags(['restaurantCache']);
         $restaurant->setStatus("false");
