@@ -5,32 +5,21 @@ namespace App\Controller;
 use App\Entity\Picture;
 use App\Repository\PictureRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class PictureController extends AbstractController
 {
-    #[Route('/api/pictures/{idPicture}', name: 'picture.getOne', methods: ['GET'])]
-    public function getPicture(int $idPicture, SerializerInterface $serializer, Request $request, PictureRepository $pictureRepository, UrlGeneratorInterface $urlGenerator): JsonResponse
-    {
-        $picture = $pictureRepository->find($idPicture);
-        $relativePath = $picture->getPublicPath() . '/' . $picture->getRealPath();
-        $location = $request->getUriForPath('/');
-        $location = str_replace('/assets', "assets", $relativePath);
-
-
-        if($picture !== null) {
-            return new JsonResponse($serializer->serialize($picture, 'json', ['groups' => 'showPictures']), Response::HTTP_OK, ["Location" => $location], true);
-        }
-
-        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
-
-    }
 
     #[Route('/picture', name: 'app_picture')]
     public function index(): JsonResponse
@@ -41,8 +30,31 @@ class PictureController extends AbstractController
         ]);
     }
 
-    #[Route('/api/pictures', name: 'picture.create', methods: ['POST'])]
-    public function createPicture(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, UrlGeneratorInterface $urlGenerator): JsonResponse
+    #[Route('/api/picture/{idPicture}', name: 'picture.getOne', methods: ['GET'])]
+    #[ParamConverter('picture', options: ['id' => 'idPicture'])]
+    public function getOnePicture(int $idPicture, SerializerInterface $serializer, Request $request, PictureRepository $pictureRepository, TagAwareCacheInterface $cache): JsonResponse
+    {
+        $picture = $pictureRepository->find($idPicture);
+        $idCache = 'getOnePicture' . $picture->getId();
+        $relativePath = $picture->getPublicPath() . '/' . $picture->getRealPath();
+        $location = $request->getUriForPath('/');
+        $location = str_replace('/assets', "assets", $relativePath);
+
+        if ($picture !== null) {
+            $data = $cache->get($idCache, function (ItemInterface $item) use ($picture, $serializer) {
+                echo 'Cache saved 🧙‍♂️';
+                $item->tag('pictureCache');
+                $context = array(SerializationContext::create()->setGroups(['showPicture']));
+                return $serializer->serialize($picture, 'json', $context);
+            });
+            return new JsonResponse($data, Response::HTTP_OK, ["Location" => $location], true);
+        }
+        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+    }
+
+    #[Route('/api/picture', name: 'picture.create', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour accéder à cette ressource.')]
+    public function createPicture(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, UrlGeneratorInterface $urlGenerator, TagAwareCacheInterface $cache): JsonResponse
     {
         $picture = new Picture();
         $file = $request->files->get('file');
@@ -52,11 +64,13 @@ class PictureController extends AbstractController
         $picture->setPublicPath("/assets/pictures/");
         $picture->setStatus("true");
 
+        $cache->invalidateTags(['pictureCache']);
+
         $entityManager->persist($picture);
         $entityManager->flush();
 
         $urlGenerator->generate('picture.getOne', ['idPicture' => $picture->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
-        $jsonPicture = $serializer->serialize($picture, 'json', ['groups' => 'showPictures']);
+        $jsonPicture = $serializer->serialize($picture, 'json', ['groups' => 'showPicture']);
         return new JsonResponse($jsonPicture, Response::HTTP_CREATED, [], true);
     }
 }
