@@ -164,6 +164,14 @@ class RestaurantController extends AbstractController
      */
     #[OA\Tag(name: 'restaurants')]
     #[Security(name: 'Bearer')]
+    #[OA\Response(
+        response: 200,
+        description: 'Restaurant supprimé',
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Restaurant non trouvé',
+    )]
     #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.delete', methods: ['DELETE'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
@@ -211,6 +219,47 @@ class RestaurantController extends AbstractController
      */
     #[OA\Tag(name: 'restaurants')]
     #[Security(name: 'Bearer')]
+    #[OA\Parameter(
+        name: 'page',
+        in: 'query',
+        description: 'The page number',
+        required: false,
+        example: 1,
+        schema: new OA\Schema(type: 'integer')
+    )]
+    #[OA\Parameter(
+        name: 'limit',
+        in: 'query',
+        description: 'The number of items per page',
+        required: false,
+        example: 10,
+        schema: new OA\Schema(type: 'integer')
+    )]
+    #[OA\Parameter(
+        name: 'latitude',
+        in: 'query',
+        description: 'The latitude of the user',
+        required: true,
+        example: 48.856614,
+        schema: new OA\Schema(type: 'string')
+    )]
+    #[OA\Parameter(
+        name: 'longitude',
+        in: 'query',
+        description: 'The longitude of the user',
+        required: true,
+        example: 2.3522219,
+        schema: new OA\Schema(type: 'string')
+    )]
+    #[OA\Parameter(
+        name: 'distance',
+        in: 'query',
+        description: 'The maximum distance between the user and the restaurant (in KM)',
+        required: true,
+        example: 20,
+        schema: new OA\Schema(type: 'integer')
+    )]
+
     #[Route('/api/closest/restaurant/', name: 'restaurant.closest', methods: ['GET'])]
     public function getClosestRestaurant(SerializerInterface $serializer, Request $request, RestaurantRepository $restaurantRepository, TagAwareCacheInterface $cache): JsonResponse
     {
