@@ -6,15 +6,16 @@ use App\Entity\Picture;
 use App\Repository\PictureRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
@@ -72,5 +73,16 @@ class PictureController extends AbstractController
         $urlGenerator->generate('picture.getOne', ['idPicture' => $picture->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
         $jsonPicture = $serializer->serialize($picture, 'json', ['groups' => 'showPicture']);
         return new JsonResponse($jsonPicture, Response::HTTP_CREATED, [], true);
+    }
+
+    #[Route('/api/picture/{idPicture}', name: 'picture.delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour accéder à cette ressource.')]
+    public function deletePicture(int $idPicture, EntityManagerInterface $entityManager, PictureRepository $pictureRepository, TagAwareCacheInterface $cache): JsonResponse
+    {
+        $cache->invalidateTags(['pictureCache']);
+        $picture = $pictureRepository->find($idPicture);
+        $picture->setStatus("false");
+        $entityManager->flush();
+        return new JsonResponse('Picture deleted 🗡️', Response::HTTP_OK, [], true);
     }
 }

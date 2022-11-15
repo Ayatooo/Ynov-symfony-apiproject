@@ -133,7 +133,7 @@ class RestaurantController extends AbstractController
     #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.delete', methods: ['DELETE'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
-    public function deleteRestaurant(Restaurant $restaurant, SerializerInterface $serializer, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
+    public function deleteRestaurant(Restaurant $restaurant, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
     {
         $cache->invalidateTags(['restaurantCache']);
         $restaurant->setStatus("false");

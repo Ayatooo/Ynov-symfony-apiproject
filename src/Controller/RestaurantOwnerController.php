@@ -67,7 +67,7 @@ class RestaurantOwnerController extends AbstractController
     public function deleteowner(RestaurantOwner $owner, EntityManagerInterface $entityManager, TagAwareCacheInterface $cache): JsonResponse
     {
         $cache->invalidateTags(['restaurantOwnerCache']);
-        $owner->setStatus(false);
+        $owner->setStatus("false");
         $entityManager->flush();
         return new JsonResponse('Owner deleted', Response::HTTP_OK);
     }
