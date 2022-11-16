@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RestaurantRepository;
 use JMS\Serializer\Annotation as Serializer;
@@ -64,6 +66,14 @@ class Restaurant
     #[Serializer\Groups(['showRestaurant'])]
     #[ORM\ManyToOne(inversedBy: 'userRestaurant')]
     private ?RestaurantOwner $restaurantOwner = null;
+
+    #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Rates::class)]
+    private Collection $rates;
+
+    public function __construct()
+    {
+        $this->rates = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -162,6 +172,36 @@ class Restaurant
     public function setRestaurantOwner(?RestaurantOwner $restaurantOwner): self
     {
         $this->restaurantOwner = $restaurantOwner;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Rates>
+     */
+    public function getRates(): Collection
+    {
+        return $this->rates;
+    }
+
+    public function addRate(Rates $rate): self
+    {
+        if (!$this->rates->contains($rate)) {
+            $this->rates->add($rate);
+            $rate->setRestaurant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRate(Rates $rate): self
+    {
+        if ($this->rates->removeElement($rate)) {
+            // set the owning side to null (unless already changed)
+            if ($rate->getRestaurant() === $this) {
+                $rate->setRestaurant(null);
+            }
+        }
 
         return $this;
     }
