@@ -52,9 +52,9 @@ class Restaurant
     #[Serializer\Groups(['showRestaurant'])]
     private ?string $restaurantPhone = null;
 
-    // #[ORM\Column(type: 'float', nullable: true)]
-    //     #[Serializer\Groups(['showRestaurant'])]
-    // private ?float $restaurantDistance = null;
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Serializer\Groups(['showRestaurant'])]
+    private ?float $restaurantDistance = null;
 
     #[Assert\Choice(choices: ["true", "false"], message: 'Le statut doit être true ou false')]
     #[ORM\Column(length: 255, nullable: false)]

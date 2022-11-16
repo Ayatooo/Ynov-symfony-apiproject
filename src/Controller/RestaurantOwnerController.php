@@ -37,7 +37,7 @@ class RestaurantOwnerController extends AbstractController
     /**
      * Get a list of restaurants owners.
      */
-    #[OA\Tag(name: 'restaurants owners')]
+    #[OA\Tag(name: 'Restaurants Owners')]
     #[Security(name: 'Bearer')]
     #[OA\Parameter(
         name: 'page',
@@ -84,7 +84,7 @@ class RestaurantOwnerController extends AbstractController
     /**
      * Get one restaurant owner.
      */
-    #[OA\Tag(name: 'restaurants owners')]
+    #[OA\Tag(name: 'Restaurants Owners')]
     #[Security(name: 'Bearer')]
     #[OA\Response(
         response: 200,
@@ -108,7 +108,7 @@ class RestaurantOwnerController extends AbstractController
     /**
      * Soft delete for a restaurant owner.
      */
-    #[OA\Tag(name: 'restaurants owners')]
+    #[OA\Tag(name: 'Restaurants Owners')]
     #[Security(name: 'Bearer')]
     #[OA\Response(
         response: 200,
@@ -142,7 +142,7 @@ class RestaurantOwnerController extends AbstractController
         description: 'Successful response',
         content: new Model(type: RestaurantOwner::class)
     )]
-    #[OA\Tag(name: 'restaurants owners')]
+    #[OA\Tag(name: 'Restaurants Owners')]
     #[Security(name: 'Bearer')]
     #[Route('/api/owner', name: 'owner.create', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
@@ -167,7 +167,7 @@ class RestaurantOwnerController extends AbstractController
     /**
      * Update a restaurant owner.
      */
-    #[OA\Tag(name: 'restaurants owners')]
+    #[OA\Tag(name: 'Restaurants Owners')]
     #[Security(name: 'Bearer')]
     #[OA\Response(
         response: 200,

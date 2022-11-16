@@ -3,10 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Picture;
+use OpenApi\Attributes as OA;
 use App\Repository\PictureRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Contracts\Cache\ItemInterface;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use phpDocumentor\Reflection\DocBlock\Tags\Var_;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\File;
@@ -31,6 +35,20 @@ class PictureController extends AbstractController
         ]);
     }
 
+    /**
+     * Get details of a picture.
+     */
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new Model(type: Picture::class)
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Picture not found',
+    )]
+    #[OA\Tag(name: 'Pictures')]
+    #[Security(name: 'Bearer')]
     #[Route('/api/picture/{idPicture}', name: 'picture.getOne', methods: ['GET'])]
     #[ParamConverter('picture', options: ['id' => 'idPicture'])]
     public function getOnePicture(int $idPicture, SerializerInterface $serializer, Request $request, PictureRepository $pictureRepository, TagAwareCacheInterface $cache): JsonResponse
@@ -53,6 +71,26 @@ class PictureController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NOT_FOUND);
     }
 
+
+    /**
+     * Create a picture.
+     */
+    #[OA\RequestBody(
+        request: 'PictureData',
+        description: 'You have to fill all the fields',
+        required: true,
+        content: new OA\JsonContent(
+            type: 'object',
+            ref: '#/components/schemas/PictureData'
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new Model(type: Picture::class)
+    )]
+    #[OA\Tag(name: 'Pictures')]
+    #[Security(name: 'Bearer')]
     #[Route('/api/picture', name: 'picture.create', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour accéder à cette ressource.')]
     public function createPicture(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, UrlGeneratorInterface $urlGenerator, TagAwareCacheInterface $cache): JsonResponse

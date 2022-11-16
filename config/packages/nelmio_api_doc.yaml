@@ -25,6 +25,12 @@ nelmio_api_doc:
             restaurant_owner_email:
               type: string
               example: romain@silvy.com
+        PictureData:
+          type: object
+          properties:
+            file:
+              type: file
+              example: romain-taupe.jpg
     security:
       - Bearer: []
  

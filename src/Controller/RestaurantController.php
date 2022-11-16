@@ -65,7 +65,7 @@ class RestaurantController extends AbstractController
         example: 10,
         schema: new OA\Schema(type: 'integer')
     )]
-    #[OA\Tag(name: 'restaurants')]
+    #[OA\Tag(name: 'Restaurants')]
     #[Security(name: 'Bearer')]
     #[Route('/api/restaurant', name: 'restaurant.getAll', methods: ['GET'])]
     public function getRestaurant(RestaurantRepository $repository, SerializerInterface $serializer, Request $request, TagAwareCacheInterface $cache): JsonResponse
@@ -97,7 +97,7 @@ class RestaurantController extends AbstractController
         response: 404,
         description: 'Restaurant not found',
     )]
-    #[OA\Tag(name: 'restaurants')]
+    #[OA\Tag(name: 'Restaurants')]
     #[Security(name: 'Bearer')]
     #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.getOne', methods: ['GET'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
@@ -134,7 +134,7 @@ class RestaurantController extends AbstractController
         description: 'Update a restaurant',
         content: new Model(type: Restaurant::class)
     )]
-    #[OA\Tag(name: 'restaurants')]
+    #[OA\Tag(name: 'Restaurants')]
     #[Security(name: 'Bearer')]
     #[Route('/api/restaurant/{idRestaurant}', name: 'restaurant.put', methods: ['PUT'])]
     #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
@@ -164,7 +164,7 @@ class RestaurantController extends AbstractController
     /**
      * Soft delete for a restaurant.
      */
-    #[OA\Tag(name: 'restaurants')]
+    #[OA\Tag(name: 'Restaurants')]
     #[Security(name: 'Bearer')]
     #[OA\Response(
         response: 200,
@@ -188,7 +188,7 @@ class RestaurantController extends AbstractController
     /**
      * Create a restaurant.
      */
-    #[OA\Tag(name: 'restaurants')]
+    #[OA\Tag(name: 'Restaurants')]
     #[Security(name: 'Bearer')]
     #[Route('/api/restaurant', name: 'restaurant.create', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour effectuer cette action')]
@@ -219,7 +219,7 @@ class RestaurantController extends AbstractController
     /**
      * Get a list of restaurants based on latitude and longitude.
      */
-    #[OA\Tag(name: 'restaurants')]
+    #[OA\Tag(name: 'Restaurants')]
     #[Security(name: 'Bearer')]
     #[OA\Parameter(
         name: 'page',
