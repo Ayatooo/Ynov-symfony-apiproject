@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Rates;
 use App\Entity\Restaurant;
 use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -300,5 +301,26 @@ class RestaurantController extends AbstractController
             return $serializer->serialize($restaurant, 'json', $context);
         });
         return new JsonResponse($data, Response::HTTP_OK, [], true);
+    }
+
+    #[Route('/api/restaurant/{idRestaurant}/rate', name: 'restaurant.rate', methods: ['POST'])]
+    #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
+    public function rateRestaurant(Restaurant $restaurant, Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ValidatorInterface $validator, TagAwareCacheInterface $cache): JsonResponse
+    {
+        $cache->invalidateTags(['restaurantCache']);
+        $data = $request->toArray();
+        $starsNumber = $data['rate'];
+        $rate = new Rates();
+        $rate->setRestaurant($restaurant)
+            ->setStarsNumber($starsNumber)
+            ->setUser($this->getUser());
+        $restaurant->addRate($rate);
+        
+        if ($starsNumber < 1 || $starsNumber > 5) {
+            return new JsonResponse('The number of stars must be between 1 and 5', JsonResponse::HTTP_BAD_REQUEST, [], true);
+        }
+        
+        $entityManager->flush();
+        return new JsonResponse('Restaurant noté', Response::HTTP_OK, [], true);
     }
 }
