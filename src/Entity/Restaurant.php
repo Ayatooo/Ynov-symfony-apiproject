@@ -70,9 +70,14 @@ class Restaurant
     #[ORM\OneToMany(mappedBy: 'restaurant', targetEntity: Rates::class)]
     private Collection $rates;
 
-    public function __construct()
+    #[ORM\Column(nullable: true)]
+    #[Serializer\Groups(['showRestaurant'])]
+    private ?float $average = null;
+
+    public function __construct(RestaurantRepository $restaurantRepository)
     {
         $this->rates = new ArrayCollection();
+        $this->average = $restaurantRepository->getAverage($this->id);
     }
 
     public function getId(): ?int
@@ -202,6 +207,18 @@ class Restaurant
                 $rate->setRestaurant(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAverage(): ?float
+    {
+        return $this->average;
+    }
+
+    public function setAverage(?float $average): self
+    {
+        $this->average = $average;
 
         return $this;
     }

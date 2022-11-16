@@ -79,4 +79,18 @@ class RestaurantRepository extends ServiceEntityRepository
         $query->setParameter('limiteValue', $limit);
         return $query->getResult();
     }
+
+    public function getAverageRate($restaurantId): array
+    {
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
+        $rsm->addRootEntityFromClassMetadata(Restaurant::class, 'r');
+        $query = $this->getEntityManager()->createNativeQuery(
+            'SELECT AVG(r.rate) AS average_rate
+            FROM rates r
+            WHERE r.restaurant_id = :restaurantId',
+            $rsm
+        );
+        $query->setParameter('restaurantId', $restaurantId);
+        return $query->getResult();
+    }
 }

@@ -321,6 +321,8 @@ class RestaurantController extends AbstractController
         }
         
         $entityManager->flush();
-        return new JsonResponse('Restaurant noté', Response::HTTP_OK, [], true);
+        $context = SerializationContext::create()->setGroups(['showRestaurant']);
+        $jsonRestaurant = $serializer->serialize($restaurant, 'json', $context);
+        return new JsonResponse($jsonRestaurant, Response::HTTP_OK, [], true);
     }
 }

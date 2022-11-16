@@ -3,6 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use OpenApi\Attributes as OA;
+use OpenApi\Annotations as OB;
+
+
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,7 +24,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
+   
     #[ORM\Column]
+    /**
+     * @OB\Property(type="array", items=@OB\Items(type="string"))
+     */
     private array $roles = [];
 
     /**
