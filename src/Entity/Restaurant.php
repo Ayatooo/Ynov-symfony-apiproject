@@ -2,13 +2,15 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RestaurantRepository;
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Common\Collections\Collection;
 use JMS\Serializer\Annotation as Serializer;
-use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
 use Hateoas\Configuration\Annotation as Hateoas;
+use Proxies\__CG__\App\Entity\RestaurantOwner;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @Hateoas\Relation(
@@ -74,11 +76,11 @@ class Restaurant
     #[Serializer\Groups(['showRestaurant'])]
     private ?float $average = null;
 
-    public function __construct(RestaurantRepository $restaurantRepository)
+    public function __construct()
     {
         $this->rates = new ArrayCollection();
-        $this->average = $restaurantRepository->getAverage($this->id);
     }
+
 
     public function getId(): ?int
     {
@@ -194,6 +196,7 @@ class Restaurant
         if (!$this->rates->contains($rate)) {
             $this->rates->add($rate);
             $rate->setRestaurant($this);
+            // $this->updateAverage();
         }
 
         return $this;
@@ -205,10 +208,21 @@ class Restaurant
             // set the owning side to null (unless already changed)
             if ($rate->getRestaurant() === $this) {
                 $rate->setRestaurant(null);
+                // $this->updateAverage();
             }
         }
 
         return $this;
+    }
+
+    public function updateAverage(): void
+    {
+        // $rates = $this->getRates();
+        // $total = 0;
+        // foreach ($rates as $rate) {
+        //     $total += $rate->getStarsNumber();
+        // }
+        // $this->setAverage($total / count($rates));
     }
 
     public function getAverage(): ?float

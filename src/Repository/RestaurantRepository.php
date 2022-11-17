@@ -80,7 +80,7 @@ class RestaurantRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
-    public function getAverageRate($restaurantId): array
+    public function getAverageRate($restaurantId): float
     {
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata(Restaurant::class, 'r');
@@ -91,6 +91,6 @@ class RestaurantRepository extends ServiceEntityRepository
             $rsm
         );
         $query->setParameter('restaurantId', $restaurantId);
-        return $query->getResult();
+        return $query->getResult()->getArrayResult()[0]['average_rate'];
     }
 }

@@ -71,11 +71,10 @@ class AppFixtures extends Fixture
             $manager->persist($user);
 
             $rates = new Rates();
-            $rates->setRestaurant($restaurant)
-                ->setUser($user)
+            $rates->setUser($user)
                 ->setStarsNumber($this->faker->numberBetween(0, 5));
-            $manager->persist($rates);
-            
+            $restaurant->addRate($rates);      
+            $manager->persist($rates);      
         }
 
         for ($i = 0; $i < 100; $i++) {
