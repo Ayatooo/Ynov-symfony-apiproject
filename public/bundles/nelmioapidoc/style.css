@@ -21,7 +21,7 @@ body {
 
 header:before {
   content:"";
-  background-color:#a69adf;
+  background-color:#27848E;
   height:70px;
   width:100%;
   text-align:center;
@@ -41,7 +41,7 @@ header #logo {
 
 header #logo img {
   height:48px;
-  background-color: transparent;
+  background-color:rgba(40, 134, 144, 0.4)
 }
 
 /**  INCREASE WRAPPER BLOC PADDING **/
@@ -64,10 +64,7 @@ header #logo img {
 }
 
 #swagger-ui.api-platform .info .title {
-  color:#3740c2;
-  margin:0;
-  padding:0;
-  text-align:center;
+  color:#3caab5;
 }
 
 #swagger-ui.api-platform .info {
@@ -75,49 +72,40 @@ header #logo img {
   max-width: 1460px;
   padding: 0px 50px;
   margin: 0px auto;
-  text-align:center;
 }
 
 /**  METHODS BLOCS **/
 
 #swagger-ui.api-platform .opblock.opblock-get .opblock-summary-method {
-  background-color:#00ce1b;
-  border-radius:50px;
+  background-color:#3CAAB5;
 }
 
 #swagger-ui.api-platform .opblock.opblock-put .opblock-summary-method {
-  background-color:#008deb;
-  border-radius:50px;
+  background-color:#E6C229;
 }
 
 #swagger-ui.api-platform .opblock.opblock-post .opblock-summary-method {
-  background-color:#f7b500;
-  border-radius:50px;
+  background-color:#78BC61;
 }
 
 #swagger-ui.api-platform .opblock.opblock-delete .opblock-summary-method {
-  background-color:#d61900;
-  border-radius:50px;
+  background-color:#ED6A5A;
 }
 
 #swagger-ui.api-platform .opblock.opblock-deprecated .opblock-summary-method {
   background-color:#ebebeb;
-  border-radius:50px;
 }
 
 #swagger-ui.api-platform .opblock.opblock-get .opblock-summary {
   border-color:#3CAAB5;
-  border-radius:50px;
 }
 
 #swagger-ui.api-platform .opblock.opblock-put .opblock-summary {
   border-color:#E6C229;
-  border-radius:50px;
 }
 
 #swagger-ui.api-platform .opblock.opblock-post .opblock-summary {
   border-color:#78BC61;
-  border-radius:50px;
 }
 
 #swagger-ui.api-platform .opblock.opblock-delete .opblock-summary {
@@ -126,24 +114,22 @@ header #logo img {
 
 #swagger-ui.api-platform .opblock.opblock-deprecated .opblock-summary {
   border-color:#ebebeb;
-  border-radius:50px;
 }
 
 #swagger-ui.api-platform .opblock-summary-method {
-  border-radius:50px;
+  border-radius:0;
   padding:10px;
 }
 
 #swagger-ui.api-platform .opblock-summary {
   padding:0;
-  border-radius:50px;
 }
 #swagger-ui.api-platform .opblock-tag {
   padding:5px 0;
   margin:0 0 10px;
 }
 #swagger-ui.api-platform .opblock-tag:hover {
-  background-color:#a69adf;
+  background-color:rgba(0,0,0,.1);
   transform:scale(1.01);
 }
 
@@ -157,7 +143,7 @@ header #logo img {
 }
 
 #swagger-ui.api-platform .opblock.opblock-put .opblock-section-header {
-  background-color:rgba(185, 151, 0, 0.1);
+  background-color:rgba(230, 194, 41, 0.1);
 }
 
 #swagger-ui.api-platform .opblock.opblock-delete .opblock-section-header {
@@ -242,7 +228,7 @@ text-align:center;
 }
 
 #swagger-ui.api-platform .btn.authorize:hover {
-  background-color:rgba(173, 173, 173, 0.192);
+  background-color:rgba(120,188,97,0.1);
 }
 
 #swagger-ui.api-platform select {
@@ -276,17 +262,7 @@ text-align:center;
     outline: none;
 }
 
-.swagger-ui .scheme-container {
-  padding: 0 0 !important;
-}
 
-.arrow {
-  margin-right: 0.5rem !important;
-}
-
-#swagger-ui.api-platform .opblock {
-  border-radius: 25px !important;
-}
 /** REMOVE TITILIUM FONT **/
 
 .swagger-ui .opblock-tag,
@@ -312,46 +288,10 @@ text-align:center;
 .swagger-ui .scopes h2,
 .swagger-ui .errors-wrapper hgroup h4 {
   font-family: sans-serif !important;
-  border-radius: 10px;
-}
-
-#operations-tag-Login {
-  background-color: transparent;
-}
-
-.swagger-ui .opblock-tag {
-  border-bottom: transparent !important;
 }
 
 #swagger-ui-logos {
   position: absolute;
   width:0;
   height:0;
-}
-
-.swagger-ui .model-box-control, .swagger-ui .models-control, .swagger-ui .opblock-summary-control {
-  background-color: transparent !important;
-}
-
-.opblock-summary opblock-summary-post {
-  background-color: transparent !important;
-}
-
-.operation-tag-content {
-  background-color: transparent !important;
-}
-.scheme-container {
-  background-color: transparent !important;
-}
-
-.auth-wrapper {
-  background-color: transparent !important;
-}
-
-.schemes wrapper block col-12 {
-  background-color: transparent !important;
-}
-
-.swagger-ui .scheme-container {
-  box-shadow: none !important;
 }
