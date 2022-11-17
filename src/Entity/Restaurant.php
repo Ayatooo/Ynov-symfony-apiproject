@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\RestaurantRepository;
 use JMS\Serializer\Annotation as Serializer;
@@ -56,6 +58,10 @@ class Restaurant
     #[Serializer\Groups(['showRestaurant'])]
     private ?float $restaurantDistance = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Serializer\Groups(['showRestaurant'])]
+    private ?float $average = null;
+
     #[Assert\Choice(choices: ["true", "false"], message: 'Le statut doit être true ou false')]
     #[ORM\Column(length: 255, nullable: false)]
     #[Serializer\Groups(['showRestaurant'])]
@@ -64,6 +70,15 @@ class Restaurant
     #[Serializer\Groups(['showRestaurant'])]
     #[ORM\ManyToOne(inversedBy: 'userRestaurant')]
     private ?RestaurantOwner $restaurantOwner = null;
+
+    #[ORM\OneToMany(mappedBy: 'Restaurant', targetEntity: Rates::class)]
+    private Collection $rates;
+
+
+    public function __construct()
+    {
+        $this->rates = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -164,5 +179,62 @@ class Restaurant
         $this->restaurantOwner = $restaurantOwner;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Rates>
+     */
+    public function getRates(): Collection
+    {
+        return $this->rates;
+    }
+
+    public function addRate(Rates $rate): self
+    {
+        if (!$this->rates->contains($rate)) {
+            $this->rates->add($rate);
+            $rate->setRestaurant($this);
+            $this->calcAverage();
+        }
+
+        return $this;
+    }
+
+    public function removeRate(Rates $rate): self
+    {
+        if ($this->rates->removeElement($rate)) {
+            // set the owning side to null (unless already changed)
+            if ($rate->getRestaurant() === $this) {
+                $rate->setRestaurant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAverage(): ?float
+    {
+        return $this->average;
+    }
+
+    public function setAverage(?float $average): self
+    {
+        $this->average = $average;
+
+        return $this;
+    }
+
+    public function calcAverage(): void
+    {
+        $sum = 0;
+        $count = 0;
+        foreach ($this->rates as $rate) {
+            $sum += $rate->getStarsNumber();
+            $count++;
+        }
+        if ($count === 0) {
+            return;
+        }
+        $this->setAverage($sum / $count);
     }
 }

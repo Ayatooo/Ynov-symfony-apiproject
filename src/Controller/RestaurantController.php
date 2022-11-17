@@ -2,26 +2,28 @@
 
 namespace App\Controller;
 
+use App\Entity\Rates;
 use App\Entity\Restaurant;
 use OpenApi\Attributes as OA;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use JMS\Serializer\SerializerInterface;
 use App\Repository\RestaurantRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Contracts\Cache\ItemInterface;
 use Nelmio\ApiDocBundle\Annotation\Security;
 use App\Repository\RestaurantOwnerRepository;
+use OpenApi\Attributes\RequestBody;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\VarExporter\Internal\Values;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\VarExporter\Internal\Values;
 
 class RestaurantController extends AbstractController
 {
@@ -279,7 +281,18 @@ class RestaurantController extends AbstractController
         example: 20,
         schema: new OA\Schema(type: 'integer')
     )]
-
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(new Model(type: Restaurant::class))
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'No restaurants found',
+    )]
     #[Route('/api/closest/restaurant/', name: 'restaurant.closest', methods: ['GET'])]
     public function getClosestRestaurant(SerializerInterface $serializer, Request $request, RestaurantRepository $restaurantRepository, TagAwareCacheInterface $cache): JsonResponse
     {
@@ -300,5 +313,47 @@ class RestaurantController extends AbstractController
             return $serializer->serialize($restaurant, 'json', $context);
         });
         return new JsonResponse($data, Response::HTTP_OK, [], true);
+    }
+
+    #[OA\Tag(name: 'Restaurants')]
+    #[Security(name: 'Bearer')]
+    #[OA\Parameter(
+        name: 'rate',
+        in: 'query',
+        description: 'number of stars',
+        required: true,
+        example: 4,
+        schema: new OA\Schema(type: 'integer')
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new Model(type: Restaurant::class)
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'No restaurants found',
+    )]
+    #[Route('/api/restaurant/{idRestaurant}/rate', name: 'restaurant.rate', methods: ['POST'])]
+    #[ParamConverter('restaurant', options: ['id' => 'idRestaurant'])]
+    public function rateRestaurant(Restaurant $restaurant, Request $request, EntityManagerInterface $manager, SerializerInterface $serializer, ValidatorInterface $validator, TagAwareCacheInterface $cache): JsonResponse
+    {
+        $rate = new Rates();
+        $rate->setUser($this->getUser());
+        $requestRate = $request->query->get('rate');
+        $requestRate > 5 ? $requestRate = 5 : $requestRate;
+        $requestRate < 1 ? $requestRate = 1 : $requestRate;
+        
+        $rate->setStarsNumber($request->query->get('rate'));
+
+        $restaurant->addRate($rate);
+
+        $cache->invalidateTags(['restaurantCache']);
+        $context = SerializationContext::create()->setGroups(['showRestaurant']);
+        $response = $serializer->serialize($restaurant, 'json', $context);
+        $manager->persist($restaurant);
+        $manager->persist($rate);
+        $manager->flush();
+        return new JsonResponse($response, Response::HTTP_OK, [], true);
     }
 }
