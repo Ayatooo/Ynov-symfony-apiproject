@@ -25,7 +25,7 @@ Run the following commands :
 ```bash
 composer install
 npm install
-php bin/console make:database
+php bin/console d:d:c
 php bin/console d:s:u
 php bin/console d:f:l
 symfony serve
