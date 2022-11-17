@@ -26,7 +26,7 @@ Run the following commands :
 composer install
 npm install
 php bin/console d:d:c
-php bin/console d:s:u
+php bin/console d:s:u --force
 php bin/console d:f:l
 symfony serve
 npm run build
