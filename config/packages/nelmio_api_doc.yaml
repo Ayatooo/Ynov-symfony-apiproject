@@ -28,6 +28,18 @@ nelmio_api_doc:
             restaurant_owner_password:
               type: string
               example: bourgogne
+        RestaurantOwnerDataUpdate:
+          type: object
+          properties:
+            restaurant_owner_first_name:
+              type: string
+              example: romain
+            restaurant_owner_last_name:
+              type: string
+              example: silvy
+            restaurant_owner_email:
+              type: string
+              example: romain@silvy.com
         RestaurantData:
           type: object
           properties:

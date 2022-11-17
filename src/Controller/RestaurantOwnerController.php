@@ -178,12 +178,12 @@ class RestaurantOwnerController extends AbstractController
         )
     )]
     #[OA\RequestBody(
-        request: 'RestaurantOwnerData',
+        request: 'RestaurantOwnerDataUpdate',
         description: 'You doesn\'t have to fill all the fields',
         required: true,
         content: new OA\JsonContent(
             type: 'object',
-            ref: '#/components/schemas/RestaurantOwnerData'
+            ref: '#/components/schemas/RestaurantOwnerDataUpdate'
         )
     )]
     #[Route('/api/owner/{idOwner}', name: 'owner.update', methods: ['PUT'])]
@@ -200,7 +200,6 @@ class RestaurantOwnerController extends AbstractController
         $owner->setRestaurantOwnerFirstName($data->getRestaurantOwnerFirstName() ? $data->getRestaurantOwnerFirstName() : $owner->getRestaurantOwnerFirstName());
         $owner->setRestaurantOwnerLastName($data->getRestaurantOwnerLastName() ? $data->getRestaurantOwnerLastName() : $owner->getRestaurantOwnerLastName());
         $owner->setRestaurantOwnerEmail($data->getRestaurantOwnerEmail() ? $data->getRestaurantOwnerEmail() : $owner->getRestaurantOwnerEmail());
-        $owner->setRestaurantOwnerPassword($data->getRestaurantOwnerPassword() ? $data->getRestaurantOwnerPassword() : $owner->getRestaurantOwnerPassword());
         $cache->invalidateTags(['restaurantOwnerCache']);
         $context = SerializationContext::create()->setGroups(['showRestaurantOwner']);
         $response = $serializer->serialize($owner, 'json', $context);
