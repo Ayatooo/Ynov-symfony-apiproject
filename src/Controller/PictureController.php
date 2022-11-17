@@ -80,7 +80,7 @@ class PictureController extends AbstractController
         description: 'You have to fill all the fields',
         required: true,
         content: new OA\JsonContent(
-            type: 'object',
+            type: 'file',
             ref: '#/components/schemas/PictureData'
         )
     )]
@@ -113,6 +113,16 @@ class PictureController extends AbstractController
         return new JsonResponse($jsonPicture, Response::HTTP_CREATED, [], true);
     }
 
+
+    /**
+     * Soft delete for a picture.
+     */
+    #[OA\Tag(name: 'Pictures')]
+    #[Security(name: 'Bearer')]
+    #[OA\Response(
+        response: 200,
+        description: 'Picture deleted',
+    )]
     #[Route('/api/picture/{idPicture}', name: 'picture.delete', methods: ['DELETE'])]
     #[IsGranted('ROLE_ADMIN', message: 'Vous n\'avez pas les droits pour accéder à cette ressource.')]
     public function deletePicture(int $idPicture, EntityManagerInterface $entityManager, PictureRepository $pictureRepository, TagAwareCacheInterface $cache): JsonResponse

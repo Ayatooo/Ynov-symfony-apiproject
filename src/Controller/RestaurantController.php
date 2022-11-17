@@ -122,17 +122,17 @@ class RestaurantController extends AbstractController
         content: new Model(type: Restaurant::class)
     )]
     #[OA\Response(
-        response: 404,
-        description: 'Restaurant not found',
-    )]
-    #[OA\Response(
         response: 400,
         description: 'Bad request',
     )]
     #[OA\RequestBody(
+        request: 'RestaurantData',
+        description: 'You have to fill all the fields',
         required: true,
-        description: 'Update a restaurant',
-        content: new Model(type: Restaurant::class)
+        content: new OA\JsonContent(
+            type: 'object',
+            ref: '#/components/schemas/RestaurantData'
+        )
     )]
     #[OA\Tag(name: 'Restaurants')]
     #[Security(name: 'Bearer')]
@@ -188,6 +188,24 @@ class RestaurantController extends AbstractController
     /**
      * Create a restaurant.
      */
+    #[OA\Response(
+        response: 200,
+        description: 'Successful response',
+        content: new Model(type: Restaurant::class)
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Bad request',
+    )]
+    #[OA\RequestBody(
+        request: 'RestaurantData',
+        description: 'You have to fill all the fields',
+        required: true,
+        content: new OA\JsonContent(
+            type: 'object',
+            ref: '#/components/schemas/RestaurantData'
+        )
+    )]
     #[OA\Tag(name: 'Restaurants')]
     #[Security(name: 'Bearer')]
     #[Route('/api/restaurant', name: 'restaurant.create', methods: ['POST'])]
